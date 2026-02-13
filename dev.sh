@@ -396,15 +396,16 @@ cmd_help() {
   echo "  ./dev.sh new                # Create new .env file"
   echo "  ./dev.sh login              # Verify Docker and EC2 connectivity"
   echo "  ./dev.sh up                 # Build and start services"
-  echo "  ./dev.sh build push deploy  # Build, push, and deploy in sequence"
+  echo "  ./dev.sh build push deploy  # Build, push, and deploy in sequence from local machine"
+  echo "  ./dev.sh build install      # Install web app on EC2 instance directly from the server"
   echo ""
 }
 
 # Dispatch
 main() {
   if [ $# -eq 0 ]; then
-    # Default target is up
-    cmd_up
+    # Default target is help if no arguments provided
+    cmd_help
     exit 0
   fi
 
