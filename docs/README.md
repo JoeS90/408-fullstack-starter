@@ -23,4 +23,4 @@ configuring, and deploying the application on an AWS EC2 instance.
  
 ## Team Workflow
 
-- Solo developer
+- N/A: Solo developer
