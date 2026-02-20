@@ -121,6 +121,12 @@ cmd_deploy() {
   echo "http://${EC2_DEPLOY_HOST}"
 }
 
+cmd_install() {
+  load_env
+  echo "Installing web app on EC2 instance..."
+  docker compose up -d --remove-orphans
+}
+
 cmd_logs() {
   load_env
   ssh -i "${HOME}/.ssh/${EC2_KEY_NAME}" "ubuntu@${EC2_DEPLOY_HOST}" "cd ${EC2_DEPLOY_DIR} && docker compose logs -f"
@@ -236,17 +242,17 @@ cmd_new() {
     read -r docker_pat
     DOCKER_PAT=$docker_pat
   else
-    DOCKER_USERNAME="changeme"
-    DOCKER_PAT="changeme"
+    DOCKER_USERNAME="none"
+    DOCKER_PAT="none"
   fi
   echo "Are you deploying to an AWS EC2 instance? (y/n  default: n)"
   read -r has_ec2
   if [ "$has_ec2" != "n" ] && [ "$has_ec2" != "N" ] && [ "$has_ec2" != "" ]; then
-      echo "What is the EC2 deploy host (ec2-xx-xxx-xx-xx.us-west-2.compute.amazonaws.com)?"
+      echo "What is the EC2 public IP?"
       read -r ec2_deploy_host
       EC2_DEPLOY_HOST=$ec2_deploy_host
       echo "Your EC2 SSH key must be located in the $HOME/.ssh directory or validation will fail."
-      echo "What is the name of your EC2 SSH key (e.g., cs123-shanepanter-sshkey.pem)?"
+      echo "What is the name of your EC2 SSH key (e.g., aws-yourname.pem)?"
       read -r ec2_key_name
       EC2_KEY_NAME=$ec2_key_name
       echo "Check for AWS SSH key..."
@@ -258,8 +264,8 @@ cmd_new() {
         chmod 600 "$HOME/.ssh/${EC2_KEY_NAME}"
   fi
   else
-      EC2_DEPLOY_HOST="changeme"
-      EC2_KEY_NAME="changeme.pem"
+      EC2_DEPLOY_HOST="localhost"
+      EC2_KEY_NAME="none"
   fi
 
   EC2_DEPLOY_DIR="/home/ubuntu/${APP_NAME}"
@@ -277,17 +283,7 @@ cmd_new() {
   load_env
   cmd_init
   echo "New dev environment setup complete."
-
-  # Auto-install bash completion
-  echo ""
-  echo "Would you like to enable bash completion for dev.sh? (y/n  default: y)"
-  read -r enable_completion
-  if [ "$enable_completion" != "n" ] && [ "$enable_completion" != "N" ]; then
-    install_completion
-  fi
-
-  echo "If you are using EC2 deployment, run './dev.sh login' to verify connectivity."
-  echo "Run './dev.sh up' to start the application."
+  echo "Run './dev.sh build install' to build and install the application."
 }
 
 install_completion() {
@@ -360,7 +356,8 @@ cmd_help() {
   print_command "[s ] ssh" "SSH into the EC2 instance"
   print_command "[lg] logs" "Tail service logs on EC2"
   print_command "[ec] ec2" "Verify EC2 SSH connectivity and env vars"
-  print_command "[dy] deploy" "Upload compose and start services on EC2"
+  print_command "[dy] deploy" "Upload compose and start services on EC2 from your local machine"
+  print_command "[dl] install" "Install web app on EC2 instance directly from the server"
   print_blank
 
   print_section "Docker Hub commands"
@@ -387,15 +384,16 @@ cmd_help() {
   echo "  ./dev.sh new                # Create new .env file"
   echo "  ./dev.sh login              # Verify Docker and EC2 connectivity"
   echo "  ./dev.sh up                 # Build and start services"
-  echo "  ./dev.sh build push deploy  # Build, push, and deploy in sequence"
+  echo "  ./dev.sh build push deploy  # Build, push, and deploy in sequence from local machine"
+  echo "  ./dev.sh build install      # Install web app on EC2 instance directly from the server"
   echo ""
 }
 
 # Dispatch
 main() {
   if [ $# -eq 0 ]; then
-    # Default target is up
-    cmd_up
+    # Default target is help if no arguments provided
+    cmd_help
     exit 0
   fi
 
@@ -413,6 +411,7 @@ main() {
       docker|dk) cmd_docker ;;
       ec2|ec) cmd_ec2 ;;
       deploy|dy) cmd_deploy ;;
+      install|dl) cmd_install ;;
       logs|lg) cmd_logs ;;
       web|w) cmd_web ;;
       open-web|ow) cmd_open_web ;;
