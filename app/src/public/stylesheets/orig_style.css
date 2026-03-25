@@ -1,0 +1,45 @@
+body {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  padding: 20px 0;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.card {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.todo-item {
+  border-bottom: 1px solid #e9ecef;
+  padding: 12px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.todo-item:last-child {
+  border-bottom: none;
+}
+
+.badge-completed {
+  background-color: #28a745;
+}
+
+.badge-pending {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.btn-delete {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}

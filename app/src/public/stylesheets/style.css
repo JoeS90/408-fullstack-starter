@@ -1,45 +1,107 @@
-body {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
-  padding: 20px 0;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-a {
-  color: #00B7FF;
+html, body
+{
+    height: 100%;
+    width: 100%;
 }
 
-.card {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.Background
+{
+    background-color: rgb(209, 183, 112);
+    font-family: 'Papyrus', 'Garamond', sans-serif;
+    /* TODO: Add a background radial gradient or texture */
 }
 
-.card-header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+.SplashPage
+{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    gap: 10px;
+
+    height: 100vh;
+    width: 100%;
+
+    margin: 0;
+    border: 0px solid black;
+    padding: 0;
+
+    text-align: center;
+
+    font-family: 'Papyrus', 'Garamond', sans-serif;
+    
 }
 
-.todo-item {
-  border-bottom: 1px solid #e9ecef;
-  padding: 12px 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.WorldPage
+{
+    display: flex;
+    flex-direction: column;
 }
 
-.todo-item:last-child {
-  border-bottom: none;
+.WorldPage.Title
+{
+
 }
 
-.badge-completed {
-  background-color: #28a745;
+.WorldPage.Info
+{
+    display: flex;
+    flex-direction: row;
 }
 
-.badge-pending {
-  background-color: #ffc107;
-  color: #333;
+.CharacterPage
+{
+
 }
 
-.btn-delete {
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
+.LocationPage
+{
+
+}
+
+h1
+{
+    font-size: 300%;
+}
+
+h2
+{
+    font-size: 200%;
+}
+
+.MenuButton
+{
+    width: fit-content;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-align: center;
+    background-color: rgb(212, 161, 20);
+
+    font-family: papyrus, garamond, sans-serif;
+    font-size: 200%;
+}
+
+.MenuButton.disabled
+{
+    background-color: rgb(128, 128, 128);
+    color: rgb(64, 64, 64)
+}
+
+.DropDown
+{
+    width: max-content;
+    padding-left: 5px;
+    padding-right: 15px;
+    text-align: center;
+    background-color: rgb(212, 161, 20);
+
+    font-family: papyrus, garamond, sans-serif;
+    font-size: 200%;
 }

@@ -8,6 +8,8 @@ const index = require('./routes/index');
 
 const app = express();
 
+app.locals.APP_NAME = 'The Bard\'s Journal';
+
 //Ensure the data directory exists
 
 const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', 'data');

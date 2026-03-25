@@ -1,0 +1,11 @@
+<div class="SplashPage">
+    <h1>Welcome, <%= user %>!</h1>
+    <select class="DropDown" id="world-select" name="world-select" onchange="selectWorld()">
+        <option value="" disabled selected hidden>Select World</option>
+        <option value="A whole new world">My test selection option</option>
+        <option value="Test2">Test 2</option>
+        <!-- TODO: Foreach world, add option -->
+    </select>
+    <button class="MenuButton" type="button" onclick="alert('Create World not implemented')">New World</button>
+    <button class="MenuButton disabled" disabled title="Not implemented">Import</button>
+</div>
