@@ -25,5 +25,6 @@ function noteEditToggle(button)
     textArea.setAttribute('readonly', true);
     button.innerText = 'Edit';
     /* TODO: Save change to database */
+    alert("Save not implemented");
   }
 }
