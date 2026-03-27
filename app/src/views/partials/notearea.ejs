@@ -1,0 +1,13 @@
+<!-- Define the standard note-keeping section -->
+<div class="NoteArea">
+    <header>
+        <span class="SectionTitle"><%= sectionTitle %></span>
+        <button class="EditToggle" type="button" onclick="noteEditToggle(this)">Edit</button>
+    </header>
+    <textarea
+        id="<%= id %>"
+        name="<%= typeof name !== 'undefined' ? name : id %>"
+        placeholder="<%= typeof placeholder !== 'undefined' ? placeholder : '' %>"
+        readonly
+    ></textarea>
+</div>

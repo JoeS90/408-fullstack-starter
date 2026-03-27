@@ -1,4 +1,20 @@
-<div>
-    <h1><%= worldName %></h1>
-    
+<div class="WorldPage">
+    <div class="Main">
+        <div class="Title">
+            <h1><%= worldName %></h1>
+        </div>
+        <div class="Info">
+            <div class="Description">
+                <img src="/images/Dungeon.png" alt="Image">
+                <%- include('partials/NoteArea', {sectionTitle: 'Description', id: 'description' }) %>
+            </div>
+            <%- include('partials/NoteArea', {sectionTitle: 'Notes', id: 'notes' }) %>
+        </div>
+    </div>
+
+    <div class="Links">
+        <textarea id="characters" name="characters" placeholder="Links to Characters" style="flex: 1;"></textarea>
+        <textarea id="locations" name="locations" placeholder="Links to Locations" style="flex: 1;"></textarea>
+        <textarea id="lore" name="lore" placeholder="Links to Lore" style="flex: 1;"></textarea>
+    </div>
 </div>
