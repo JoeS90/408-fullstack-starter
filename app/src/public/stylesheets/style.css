@@ -105,8 +105,80 @@ body
 /* Format for the Character page */
 .CharacterPage
 {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 20px;
 
+    height: 100vh;
+    width: 100%;
 }
+
+    .CharacterPage .Info
+    {
+        flex: 3;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+        .CharacterPage .Info .Overview
+        {
+            flex: 2;
+            min-height: 0;
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+        }
+        
+            .CharacterPage .Info .Overview img
+            {
+                flex: 1;
+                overflow: hidden;
+                min-width: 0;
+                min-height: 0;
+                height: 100%;
+                width: 100%;
+                object-fit: contain;
+
+                border: 2px solid black;
+            }
+
+            .CharacterPage .Info .Overview .Text
+            {
+                flex: 2;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+                .CharacterPage .Info .Overview .Text > header
+                {
+                    display: flex;
+                    flex-direction: column;
+                    flex: 0 0 auto;
+                    align-items: center;
+                    margin: 0;
+                    
+                    font-family: 'Papyrus', 'Garamond', sans-serif;
+                }
+        
+        .CharacterPage .Info .History
+        {
+            flex: 3;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+    .CharacterPage .Links
+    {
+        display: flex;
+        flex: 1;
+        flex-direction: row;
+        gap: 10px;
+    }
 
 /* Format for the Location page */
 .LocationPage
@@ -124,12 +196,13 @@ body
 h1
 {
     font-size: 300%;
-    font-family: papyrus, garamond, sans-serif;
+    font-family: 'Papyrus', 'Garamond', sans-serif;
 }
 
 h2
 {
     font-size: 200%;
+    font-family: 'Papyrus', 'Garamond', sans-serif;
 }
 
 .MenuButton
@@ -140,7 +213,7 @@ h2
     text-align: center;
     background-color: rgb(212, 161, 20);
 
-    font-family: papyrus, garamond, sans-serif;
+    font-family: 'Papyrus', 'Garamond', sans-serif;
     font-size: 200%;
 }
 
@@ -158,10 +231,11 @@ h2
     text-align: center;
     background-color: rgb(212, 161, 20);
 
-    font-family: papyrus, garamond, sans-serif;
+    font-family: 'Papyrus', 'Garamond', sans-serif;
     font-size: 200%;
 }
 
+/* Formatting for a NoteArea Element */
 .NoteArea
 {
     display: flex;
@@ -186,7 +260,7 @@ h2
     {
         font-size: 1.2rem;
         font-weight: bold;
-        font-family: papyrus, garamond, sans-serif;
+        font-family: 'Papyrus', 'Garamond', sans-serif;
     }
 
     .NoteArea header .EditToggle
@@ -194,7 +268,7 @@ h2
         padding: 2px;
 
         background-color: rgb(212, 161, 20);
-        font-family: papyrus, garamond, sans-serif;
+        font-family: 'Papyrus', 'Garamond', sans-serif;
     }
 
     .NoteArea textarea
@@ -203,5 +277,16 @@ h2
         resize: none;
 
         font-size: 1.1rem;
-        font-family: papyrus, garamond, sans-serif;
+        font-family: 'Papyrus', 'Garamond', sans-serif;
     }
+
+/* Formatting for a StatBlock element */
+.StatBlock
+{
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+
+    border: 2px solid black;
+}

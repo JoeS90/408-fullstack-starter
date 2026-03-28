@@ -1,0 +1,29 @@
+<div class="CharacterPage">
+    <div class="Info">
+        <div class="Overview">
+            <img src="/images/Knight.png" alt="Image">
+            <div class="Text">
+                <header>
+                    <h2><%= characterName %></h2>
+                    <h3>Stat Block: <%= "TODO" %></h3>
+                </header>
+                <%- include('partials/noteArea', {sectionTitle: 'Physical Description', id: 'description', value: 'Strong, fast, fresh from the fight' }) %>
+                <%- include('partials/noteArea', {sectionTitle: 'Behavior', id: 'behavior', value: 'Kills his enemies, sees them driven before him. Enjoys the lamentations of their women.' }) %>
+            </div>
+        </div>
+        <div class="History">
+            <%- include('partials/noteArea', {sectionTitle: 'Backstory', id: 'backstory', value: 'Born and raised in West Philadelphia. Spent most of his days on the playground.' }) %>
+            <%- include('partials/noteArea', {sectionTitle: 'Notes', id: 'notes', value: 'Bottle fame... brew glory... put a stopper in death...' }) %>
+            <span style="font-size: 1.2rem; font-weight: bold; font-family: 'Papyrus', 'Garamond', sans-serif; flex: 0 0 auto;">Affiliations</span>
+            <div class="Links">
+                <textarea id="characters" name="characters" placeholder="Links to Characters" style="flex: 1;"></textarea>
+                <textarea id="locations" name="locations" placeholder="Links to Locations" style="flex: 1;"></textarea>
+                <textarea id="lore" name="lore" placeholder="Links to Lore" style="flex: 1;"></textarea>   
+            </div>
+        </div>
+    </div>
+
+    <div class="StatBlock">
+        
+    </div>
+</div>

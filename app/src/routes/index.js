@@ -21,4 +21,9 @@ router.get('/world', function(req, res) {
   res.render('world', {worldName: "Kingdom of Placeholderia"});
 });
 
+/* Get character page */
+router.get('/character', function(req, res) {
+  res.render('character', {characterName: "Sir Exel Pixelart"});
+});
+
 module.exports = router;
