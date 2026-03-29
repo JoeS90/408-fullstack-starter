@@ -1,27 +1,86 @@
 const Database = require('better-sqlite3');
 
-const createTodosTableSQL = `
-  CREATE TABLE IF NOT EXISTS todos (
+/* Create the users table. Tracks accounts. */
+/* TODO: Implement UUID and encrypted storage of emails */
+const createUsersTable = `
+  CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    task TEXT NOT NULL,
-    completed INTEGER DEFAULT 0
-  )`;
+    username VARCHAR(50) NOT NULL,
+    email TEXT,
+    email_encrypted TEXT,
+    email_iv TEXT,
+    pwd_hash TEXT,
+    created_at INTEGER,
+    last_login INTEGER
+  )`
 
+/* Create the collections (worlds) table. */
+const createCollectionsTable = `
+  CREATE TABLE IF NOT EXISTS collections (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(50) NOT NULL,
+    creator_id INTEGER,
+    description TEXT,
+    notes TEXT,
+    FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE 
+  )`
 
+/* Create the locations table. */
+const createLocationsTable = `
+  CREATE TABLE IF NOT EXISTS locations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(50) NOT NULL,
+    collection_id INTEGER,
+    image_path TEXT,
+    atmosphere TEXT,
+    history TEXT,
+    notes TEXT,
+    parent_location_id INTEGER,
+    FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_location_id) REFERENCES collections(id) ON DELETE SET NULL
+  )`
+
+/* Create the characters table. */
+const createCharactersTable = `
+  CREATE TABLE IF NOT EXISTS characters (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(50) NOT NULL,
+    collection_id INTEGER,
+    image_path TEXT,
+    description TEXT,
+    behavior TEXT,
+    backstory TEXT,
+    notes TEXT,
+    FOREIGN KEY (collection_id) REFERENCE collections(id) ON DELETE CASCADE
+  )`
+
+/* Create the Database */
 function createDatabaseManager(dbPath) {
+  /* Initial setup */
   const database = new Database(dbPath);
   console.log('Database manager created for:', dbPath);
   database.pragma('foreign_keys = ON');
-  database.exec(createTodosTableSQL);
+
+  /* Build tables */
+  database.exec(createUsersTable);
+  database.exec(createCollectionsTable);
+  database.exec(createLocationsTable);
+  database.exec(createCharactersTable);
 
   function ensureConnected() {
     if (!database.open) {
       throw new Error('Database connection is not open');
     }
   }
+
   return {
     dbHelpers: {
 
+      createUser: (username, email, pwd_hash) => {
+        /* TODO */
+      },
+
+      /* OLD DATA. TODO: Delete these */
       clearDatabase: () => {
         if (process.env.NODE_ENV === 'test') {
           ensureConnected();
