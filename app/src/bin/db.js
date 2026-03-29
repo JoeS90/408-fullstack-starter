@@ -51,7 +51,7 @@ const createCharactersTable = `
     behavior TEXT,
     backstory TEXT,
     notes TEXT,
-    FOREIGN KEY (collection_id) REFERENCE collections(id) ON DELETE CASCADE
+    FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE
   )`
 
 /* Create the Database */
@@ -80,7 +80,7 @@ function createDatabaseManager(dbPath) {
         /* TODO */
       },
 
-      /* OLD DATA. TODO: Delete these */
+      /* OLD DATA. TODO: Delete these
       clearDatabase: () => {
         if (process.env.NODE_ENV === 'test') {
           ensureConnected();
@@ -144,7 +144,7 @@ function createDatabaseManager(dbPath) {
 
       getCompletedTodos: () => {
         return database.prepare('SELECT COUNT(*) AS c FROM todos WHERE completed > 0').get().c;
-      },
+      },*/
     }
   };
 }
