@@ -1,6 +1,9 @@
 <div class="SplashPage">
     <h1><%= APP_NAME %></h1>
     <h2>Functions are enabled in test mode. Your data will NOT be saved long-term.</h2> <!-- TODO: obviously come up with something else -->
+    <% if (locals.error) { %>
+        <p class="ErrorMessage"><%= error %></p>
+    <% } %>
     <form action="/login" method="POST">
         <input type="text" name="username" placeholder="Username" required>
         <input type="password" name="password" placeholder="Password" required>

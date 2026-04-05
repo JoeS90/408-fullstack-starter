@@ -1,5 +1,5 @@
 const Database = require('better-sqlite3');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 /* Create the users table. Tracks accounts. */
 /* TODO: Implement UUID and encrypted storage of emails */
@@ -83,7 +83,7 @@ function createDatabaseManager(dbPath) {
 
         try
         {
-          const stmt = dbPath.prepare(`
+          const stmt = database.prepare(`
             INSERT INTO users (username, email, pwd_hash, created_at)
             VALUES (?, ?, ?, ?)
           `);
@@ -99,7 +99,7 @@ function createDatabaseManager(dbPath) {
       {
         try
         {
-          const stmt = dbPath.prepare(`
+          const stmt = database.prepare(`
             SELECT * 
             FROM users 
             WHERE username = ?
@@ -135,7 +135,7 @@ function createDatabaseManager(dbPath) {
       {
         try
         {
-          const stmt = dbPath.prepare(`
+          const stmt = database.prepare(`
             INSERT INTO collections (name, creator_id, description, notes)
             VALUES (?, ?, ?, ?)  
           `);
