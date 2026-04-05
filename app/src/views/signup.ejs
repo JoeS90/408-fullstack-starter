@@ -1,0 +1,15 @@
+<div class="SplashPage">
+    <h1><%= APP_NAME %></h1>
+    <h2>Welcome to the College of Lore, applicant!</h2>
+    <% if (locals.error) { %>
+        <p class="ErrorMessage"><%= error %></p>
+    <% } %>
+    <form action="/register" method="POST">
+        <input type="text" name="username" value="<%= initName %>" placeholder="Username" required>
+        <input type="text" name="email" value="<%= initEmail %>" placeholder="Email" required>
+        <input type="password" name="password1" placeholder="Password" required>
+        <input type="password" name="password2" placeholder="Re-Type Password" required>
+        <button class="MenuButton" type="submit">Create</button>
+        <button class="MenuButton" type="submit" formaction="/" formnovalidate>Back</button>
+    </form>
+</div>

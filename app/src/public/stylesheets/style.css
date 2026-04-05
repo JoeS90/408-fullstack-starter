@@ -11,7 +11,16 @@ body
     height: 100%;
     width: 100%;
     background-color: rgb(209, 183, 112);
+    color: black;
     /* TODO: Add a background radial gradient or texture */
+}
+
+form
+{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
 }
 
 /* Format for Menu pages */
@@ -33,7 +42,7 @@ body
     padding: 0;
 
     text-align: center;
-
+    color: black;
     font-family: 'Papyrus', 'Garamond', sans-serif;
 }
 
@@ -63,8 +72,9 @@ body
         .WorldPage .Main .Title
         {
             flex: 0 0 auto;
-
             margin: 10px;
+
+            color: black;
         }
 
         .WorldPage .Main .Info
@@ -75,6 +85,7 @@ body
             gap: 20px;
 
             min-height: 0;
+            color: black;
         }
 
             .WorldPage .Main .Info .Description
@@ -83,6 +94,7 @@ body
                 flex-direction: column;
                 flex: 1;
                 gap: 20px;
+                color: black;
             }
 
                 .WorldPage .Main .Info .Description img
@@ -210,12 +222,14 @@ body
 h1
 {
     font-size: 300%;
+    color: black;
     font-family: 'Papyrus', 'Garamond', sans-serif;
 }
 
 h2
 {
     font-size: 200%;
+    color: black;
     font-family: 'Papyrus', 'Garamond', sans-serif;
 }
 
@@ -227,6 +241,7 @@ h2
     text-align: center;
     background-color: rgb(212, 161, 20);
 
+    color: black;
     font-family: 'Papyrus', 'Garamond', sans-serif;
     font-size: 200%;
 }
@@ -247,6 +262,13 @@ h2
 
     font-family: 'Papyrus', 'Garamond', sans-serif;
     font-size: 200%;
+}
+
+.ErrorMessage
+{
+    font-weight: bold;
+    color: maroon;
+    font-family: 'Papyrus', 'Garamond', sans-serif;
 }
 
 /* Formatting for a NoteArea Element */
@@ -293,6 +315,7 @@ h2
         font-size: 1.1rem;
         font-family: 'Papyrus', 'Garamond', sans-serif;
     }
+
 
 /* Formatting for a StatBlock element */
 .StatBlock

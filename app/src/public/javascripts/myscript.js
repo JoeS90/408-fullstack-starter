@@ -1,7 +1,3 @@
-function showHelloWorld() {
-  alert('helloworld');
-}
-
 function selectWorld()
 {
   var world = document.getElementById("world-select").value;
@@ -28,3 +24,4 @@ function noteEditToggle(button)
     alert("Save not implemented");
   }
 }
+

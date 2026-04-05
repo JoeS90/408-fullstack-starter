@@ -1,11 +1,12 @@
 const Database = require('better-sqlite3');
+const bcrypt = require('bcrypt');
 
 /* Create the users table. Tracks accounts. */
 /* TODO: Implement UUID and encrypted storage of emails */
 const createUsersTable = `
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username VARCHAR(50) NOT NULL,
+    username VARCHAR(50) UNIQUE NOT NULL,
     email TEXT,
     email_encrypted TEXT,
     email_iv TEXT,
@@ -37,7 +38,7 @@ const createLocationsTable = `
     notes TEXT,
     parent_location_id INTEGER,
     FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE,
-    FOREIGN KEY (parent_location_id) REFERENCES collections(id) ON DELETE SET NULL
+    FOREIGN KEY (parent_location_id) REFERENCES locations(id) ON DELETE SET NULL
   )`
 
 /* Create the characters table. */
@@ -76,8 +77,75 @@ function createDatabaseManager(dbPath) {
   return {
     dbHelpers: {
 
-      createUser: (username, email, pwd_hash) => {
-        /* TODO */
+      createUser: (username, email, password) => 
+      {
+        const pwd_hash = bcrypt.hashSync(password, 10);
+
+        try
+        {
+          const stmt = dbPath.prepare(`
+            INSERT INTO users (username, email, pwd_hash, created_at)
+            VALUES (?, ?, ?, ?)
+          `);
+          return stmt.run(username, email, pwd_hash, Date.now());
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      getUser: (username) =>
+      {
+        try
+        {
+          const stmt = dbPath.prepare(`
+            SELECT * 
+            FROM users 
+            WHERE username = ?
+          `)
+
+          const row = stmt.get(username);
+          return row ? row : null;
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      verifyUser: function(username, password)
+      {
+        const user = this.getUser(username);
+
+        if(!user)
+        {
+          throw new Error("Invalid username.");
+        }
+
+        if(!bcrypt.compareSync(password, user.pwd_hash))
+        {
+          throw new Error("Invalid password.");
+        }
+
+        return user.id;
+      },
+
+      createCollection: (name, userId) =>
+      {
+        try
+        {
+          const stmt = dbPath.prepare(`
+            INSERT INTO collections (name, creator_id, description, notes)
+            VALUES (?, ?, ?, ?)  
+          `);
+
+          return stmt.run(name, userId, '', '');
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
       },
 
       /* OLD DATA. TODO: Delete these
