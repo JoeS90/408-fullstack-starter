@@ -1,18 +1,64 @@
+/* Style Variables */
+:root 
+{
+    /* Colors */
+    --base-color: rgb(209, 183, 112);
+    --emphasis-color: rgb(212, 161, 20);
+    --disabled-bg: rgb(128, 128, 128);
+
+    --text-color: black;
+    --alert-color: maroon;
+    --disabled-text: rgb(64, 64, 64);
+
+    /* Fonts */
+    --base-font-size: 16px;
+    --font-family: 'Papyrus', 'Garamond', sans-serif;
+
+    /* Borders */
+    --section-border: 2px solid black;
+}
+
 /* Global settings to remove browser defaults and include borders in size calculations */
-* {
+* 
+{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+html
+{
+    height: 100%;
+}
+
 /* Set the standardized background */
 body
 {
+    display: flex;
+    flex-direction: column;
     height: 100%;
-    width: 100%;
-    background-color: rgb(209, 183, 112);
-    color: black;
+    background-color: var(--base-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    font-size: var(--base-font-size);
     /* TODO: Add a background radial gradient or texture */
+}
+
+header
+{
+    flex: 0 0 auto;
+}
+
+main
+{
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+footer
+{
+    flex: 0 0 auto;
 }
 
 form
@@ -22,6 +68,44 @@ form
     gap: 10px;
     align-items: center;
 }
+
+button, input, select, textarea
+{
+    font-family: inherit;
+    font-size: inherit;
+}
+
+a
+{
+    color: var(--text-color);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.NavBar
+{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 50px;
+    justify-content: space-between;
+
+    background-color: var(--emphasis-color);
+
+    font-size: 1.2rem;
+}
+    /* Make navigation buttons and links consistent. Button necessary for secure logout */
+    .NavBar a, .navButton
+    {
+        font-family: inherit;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--text-color);
+        text-decoration: none;
+        border: transparent;
+        cursor: pointer;
+        background: none;
+    }
 
 /* Format for Menu pages */
 .SplashPage
@@ -33,17 +117,9 @@ form
     align-content: center;
     align-items: center;
     gap: 10px;
-
-    height: 100vh;
     width: 100%;
 
-    margin: 0;
-    border: 0px solid black;
-    padding: 0;
-
     text-align: center;
-    color: black;
-    font-family: 'Papyrus', 'Garamond', sans-serif;
 }
 
 /* Format for the World page */
@@ -73,8 +149,6 @@ form
         {
             flex: 0 0 auto;
             margin: 10px;
-
-            color: black;
         }
 
         .WorldPage .Main .Info
@@ -85,7 +159,6 @@ form
             gap: 20px;
 
             min-height: 0;
-            color: black;
         }
 
             .WorldPage .Main .Info .Description
@@ -94,7 +167,6 @@ form
                 flex-direction: column;
                 flex: 1;
                 gap: 20px;
-                color: black;
             }
 
                 .WorldPage .Main .Info .Description img
@@ -109,7 +181,7 @@ form
                     max-width: 100%;
                     object-fit: contain;
 
-                    border: 2px solid black;
+                    border: var(--section-border);
                 }
 
                 .WorldPage .Main .Info .Text
@@ -168,7 +240,7 @@ form
                 width: 100%;
                 object-fit: contain;
 
-                border: 2px solid black;
+                border: var(--section-border);
             }
 
             .CharacterPage .Info .Overview .Text
@@ -185,9 +257,7 @@ form
                     flex-direction: column;
                     flex: 0 0 auto;
                     align-items: center;
-                    margin: 0;
-                    
-                    font-family: 'Papyrus', 'Garamond', sans-serif;
+                    margin: 0;                    
                 }
         
         .CharacterPage .Info .History
@@ -221,16 +291,12 @@ form
 /* Element formatting */
 h1
 {
-    font-size: 300%;
-    color: black;
-    font-family: 'Papyrus', 'Garamond', sans-serif;
+    font-size: 3rem;
 }
 
 h2
 {
-    font-size: 200%;
-    color: black;
-    font-family: 'Papyrus', 'Garamond', sans-serif;
+    font-size: 2rem;
 }
 
 .MenuButton
@@ -239,11 +305,9 @@ h2
     padding-left: 5px;
     padding-right: 5px;
     text-align: center;
-    background-color: rgb(212, 161, 20);
+    background-color: var(--emphasis-color);
 
-    color: black;
-    font-family: 'Papyrus', 'Garamond', sans-serif;
-    font-size: 200%;
+    font-size: 2rem;
 }
 
 .MenuButton.disabled
@@ -258,17 +322,15 @@ h2
     padding-left: 5px;
     padding-right: 15px;
     text-align: center;
-    background-color: rgb(212, 161, 20);
+    background-color: var(--emphasis-color);
 
-    font-family: 'Papyrus', 'Garamond', sans-serif;
     font-size: 200%;
 }
 
 .ErrorMessage
 {
     font-weight: bold;
-    color: maroon;
-    font-family: 'Papyrus', 'Garamond', sans-serif;
+    color: var(--alert-color);
 }
 
 /* Formatting for a NoteArea Element */
@@ -279,7 +341,7 @@ h2
     flex: 1;
     min-height: 0;
 
-    border: 2px solid black;
+    border: var(--section-border);
 }
 
     .NoteArea header
@@ -296,15 +358,13 @@ h2
     {
         font-size: 1.2rem;
         font-weight: bold;
-        font-family: 'Papyrus', 'Garamond', sans-serif;
     }
 
     .NoteArea header .EditToggle
     {
         padding: 2px;
 
-        background-color: rgb(212, 161, 20);
-        font-family: 'Papyrus', 'Garamond', sans-serif;
+        background-color: var(--emphasis-color);
     }
 
     .NoteArea textarea
@@ -312,7 +372,7 @@ h2
         flex: 1;
         resize: none;
 
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-family: 'Papyrus', 'Garamond', sans-serif;
     }
 
@@ -325,5 +385,5 @@ h2
     flex-direction: column;
     min-height: 0;
 
-    border: 2px solid black;
+    border: var(--section-border);
 }

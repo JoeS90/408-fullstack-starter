@@ -22,12 +22,26 @@ router.get('/login', function(req, res) {
       const {username, password} = req.body;
       const userId = req.db.verifyUser(username, password);
 
+      req.session.user = {id: userId, name: username};
+
       res.redirect('/home');
     }
     catch (e)
     {
       res.render('login', {error: e.message});
     }
+  });
+
+  /* Logout */
+  router.post('/logout', function(req, res) {
+    req.session.destroy((err) => {
+      if (err)
+      {
+        return console.log(err);
+      }
+      res.clearCookie('connect.sid', {path: '/'});
+      res.redirect('/');
+    });
   });
 
   /* New account page*/
