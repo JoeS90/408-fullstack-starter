@@ -32,7 +32,7 @@ router.get('/login', function(req, res) {
     }
   });
 
-  /* Logout */
+  /* Logout. Use 'post' v. 'get' to prevent CSRF attacks */
   router.post('/logout', function(req, res) {
     req.session.destroy((err) => {
       if (err)
