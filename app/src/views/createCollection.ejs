@@ -1,0 +1,14 @@
+<div class="SplashPage">
+    <h1>Create a new collection</h1>
+    <h2>Choose a name. (This can be changed later.)</h2>
+    <% if (locals.error) { %>
+        <p class="ErrorMessage"><%= error %></p>
+    <% } %>
+    <form action="/addCollection" method="POST">
+        <input type="text" name="name" placeholder="Name" required autofocus>
+        <button class="MenuButton" type="submit">Create</button>
+    </form>
+    <a href="/home">
+        <button class="MenuButton">Back</button>
+    </a>
+</div>

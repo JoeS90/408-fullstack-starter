@@ -148,6 +148,27 @@ function createDatabaseManager(dbPath) {
           throw e; // TODO: add specific handling
         }
       },
+
+      getCollection: (collectionId, userId) =>
+      {
+        try
+        {
+          const stmt = database.prepare(`
+            SELECT * 
+            FROM collections 
+            WHERE id = ?
+              AND creator_id = ?
+          `)
+
+          const row = stmt.get(collectionId, userId);
+          return row ? row : null;
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+      
     }
   };
 }

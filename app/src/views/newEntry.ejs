@@ -1,0 +1,21 @@
+<div class="SplashPage">
+    <h1>Create new <%= entryType %></h1>
+    <h2>Choose a name. (This can be changed later.)</h2>
+    <% if (locals.error) { %>
+        <p class="ErrorMessage"><%= error %></p>
+    <% } %>
+    <form action="/add" method="POST">
+        <input type="hidden" name="entryType" value="<%= entryType %>">
+        <% if (locals.collectionId) { %>
+            <input type="hidden" name="collectionId" value="<%= collectionId %>">
+        <% } %>
+        <input type="text" name="name" placeholder="Name" required autofocus>
+        <button class="MenuButton" type="submit">
+            <% if (locals.collectionId) { %>
+                Add to <%= collectionName %>
+            <% } else { %>
+                Create
+            <% } %>
+        </button>
+    </form>
+</div>

@@ -1,21 +1,32 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET home (landing) page. */
-router.get('/', function(req, res) {
+/* Authentication middleware. Reroute to main on failed authentication */
+function checkAuth(req, res, next)
+{
+  if(req.session.user)
+  {
+    return next();
+  }
+  res.redirect('/');
+}
+
+/* Dev page with links to various views. TODO: Delete when done */
+router.get('/dev', function(req, res) {
   res.render('dev');
 });
 
-router.post('/', function(req, res) {
-  res.redirect('/');
-})
-
-/* Get login page. TODO: this will replace the dev page as the landing page */
-router.get('/login', function(req, res) {
+/* Get login page. */
+router.get('/', function(req, res) {
   res.render('login');
 });
 
-  /* Attempt login */
+/* Safety blocking function for handling duplicate/incorrect requests */
+router.post('/', function(req, res) {
+  res.redirect('/');
+});
+
+  /* Attempt login. Do NOT Authenticate first! */
   router.post('/login', function(req, res) {
     try
     {
@@ -33,7 +44,7 @@ router.get('/login', function(req, res) {
   });
 
   /* Logout. Use 'post' v. 'get' to prevent CSRF attacks */
-  router.post('/logout', function(req, res) {
+  router.post('/logout', checkAuth, function(req, res) {
     req.session.destroy((err) => {
       if (err)
       {
@@ -44,14 +55,14 @@ router.get('/login', function(req, res) {
     });
   });
 
-  /* New account page*/
+  /* New account page. Do NOT authenticate first! */
   router.post('/signup', function(req, res) {
     const {username, email} = req.body;
 
     res.render('signup', { initName: username || '', initEmail: email || '', error: null});
   });
 
-    /* Create account */
+    /* Create account. Do NOT authenticate first! */
     router.post('/register', function(req, res) {
       const {username, email, password1, password2} = req.body;
 
@@ -63,7 +74,8 @@ router.get('/login', function(req, res) {
       {
         try
         {
-          req.db.createUser(username, email, password1);
+          const userId = req.db.createUser(username, email, password1);
+          req.session.user = { id: userId, name: username };
           res.redirect('/home');
         }
         catch(e)
@@ -75,17 +87,68 @@ router.get('/login', function(req, res) {
     });
 
 /* Get home page. (World selection/creation) */
-router.get('/home', function(req, res) {
-  res.render('home', {user: "Boblin the Goblin" }); /* TODO: Create secure means of logging in */
+router.get('/home', checkAuth, function(req, res) {
+  res.render('home', {user: req.session.user.name });
 });
 
+/* Get "create collection" page. */
+router.get('/createCollection', checkAuth, function(req, res) {
+  res.render('createCollection', {error: null});
+});
+
+  /* Attempt to create new collection in the database. */
+  router.post('/addCollection', checkAuth, function(req, res) {
+    const{name} = req.body;
+    const userId = req.session.user.id;
+
+    try
+    {
+      const result = req.db.createCollection(name, userId);
+      res.redirect(`/world/${result.lastInsertRowid}`);
+    }
+    catch(e)
+    {
+      console.log(e);
+      res.render('createCollection', {error: "A collection with that name already exists."});
+    }
+  });
+
+/* Get World by ID */
+router.get('/collection/:id', checkAuth, function(req, res) {
+  const collectionId = req.params.id;
+  const userId = req.session.user.id;
+
+  try
+  {
+    const data = req.db.getCollection(collectionId);
+
+    if(!data)
+    {
+      return res.status(404).send("Collection not found.");
+    }
+
+    res.render('world', {world: data});
+  }
+  catch(e)
+  {
+    console.log(e);
+    res.render('home', {error: "Failed to load collection."});
+  }
+})
+
+
+
+
+
+
+
 /* Get world page. (Contains links to notes pages) */
-router.get('/world', function(req, res) {
+router.get('/world', checkAuth, function(req, res) {
   res.render('world', {worldName: "Kingdom of Placeholderia"});
 });
 
 /* Get character page */
-router.get('/character', function(req, res) {
+router.get('/character', checkAuth, function(req, res) {
   res.render('character', {characterName: "Sir Exel Pixelart"});
 });
 
