@@ -21,6 +21,7 @@ const createCollectionsTable = `
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name VARCHAR(50) NOT NULL,
     creator_id INTEGER,
+    image_path TEXT,
     description TEXT,
     notes TEXT,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE 
@@ -88,7 +89,9 @@ function createDatabaseManager(dbPath) {
             INSERT INTO users (username, email, pwd_hash, created_at)
             VALUES (?, ?, ?, ?)
           `);
-          return stmt.run(username, email, pwd_hash, Date.now());
+
+          const newUserId = stmt.run(username, email, pwd_hash, Date.now()).lastInsertRowid;
+          return newUserId;
         }
         catch (e)
         {
@@ -137,11 +140,12 @@ function createDatabaseManager(dbPath) {
         try
         {
           const stmt = database.prepare(`
-            INSERT INTO collections (name, creator_id, description, notes)
-            VALUES (?, ?, ?, ?)  
+            INSERT INTO collections (name, creator_id, image_path, description, notes)
+            VALUES (?, ?, ?, ?, ?)  
           `);
 
-          return stmt.run(name, userId, '', '');
+          console.log(name, userId);
+          return stmt.run(name, userId, '/images/PostalGames_placeholder.png', '', '');
         }
         catch (e)
         {
@@ -158,7 +162,7 @@ function createDatabaseManager(dbPath) {
             FROM collections 
             WHERE id = ?
               AND creator_id = ?
-          `)
+          `);
 
           const row = stmt.get(collectionId, userId);
           return row ? row : null;
@@ -168,7 +172,55 @@ function createDatabaseManager(dbPath) {
           throw e; // TODO: add specific handling
         }
       },
-      
+
+      getCollectionsByUser: (userId) =>
+      {
+        try
+        {
+          const stmt = database.prepare(`
+            SELECT id, name
+            FROM collections
+            WHERE creator_id = ?
+          `)
+
+          const response = stmt.all(userId);
+          return response ? response : null;
+        }
+        catch(e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      createCharacter: (name, collectionId) =>
+      {
+        try
+        {
+          const stmt = database.prepare(`
+            INSERT INTO characters (name, collection_id, description, notes)
+            VALUES (?, ?, ?, ?)  
+          `);
+
+          return stmt.run(name, userId, '', '');
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      nameAlreadyExists: (array, name) =>
+      {
+        for(var i = 0; i < array.length; i++)
+        {
+          if(array[i].name.toLowerCase() === name.toLowerCase())
+          {
+            return true;
+          }
+        }
+        return false;
+      },
+
     }
   };
 }

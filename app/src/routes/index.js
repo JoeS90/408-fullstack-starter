@@ -39,6 +39,7 @@ router.post('/', function(req, res) {
     }
     catch (e)
     {
+      console.log(e);
       res.render('login', {error: e.message});
     }
   });
@@ -100,16 +101,25 @@ router.get('/createCollection', checkAuth, function(req, res) {
   router.post('/addCollection', checkAuth, function(req, res) {
     const{name} = req.body;
     const userId = req.session.user.id;
-
+    console.log("Add collection ( " + name + ", " + userId + ")");
     try
     {
+      const collections = req.db.getCollectionsByUser(userId);
+      if(req.db.nameAlreadyExists(collections, name))
+      {
+         res.render('createCollection', {error: "A collection with that name already exists."});
+         return;
+      }
+
       const result = req.db.createCollection(name, userId);
-      res.redirect(`/world/${result.lastInsertRowid}`);
+
+      console.log(result);
+      res.redirect(`/collection/${result.lastInsertRowid}`);
     }
     catch(e)
     {
       console.log(e);
-      res.render('createCollection', {error: "A collection with that name already exists."});
+      res.render('createCollection', {error: e.message});
     }
   });
 
@@ -117,11 +127,11 @@ router.get('/createCollection', checkAuth, function(req, res) {
 router.get('/collection/:id', checkAuth, function(req, res) {
   const collectionId = req.params.id;
   const userId = req.session.user.id;
-
+  console.log(collectionId, userId);
   try
   {
-    const data = req.db.getCollection(collectionId);
-
+    const data = req.db.getCollection(collectionId, userId);
+    console.log(data);
     if(!data)
     {
       return res.status(404).send("Collection not found.");
@@ -134,9 +144,42 @@ router.get('/collection/:id', checkAuth, function(req, res) {
     console.log(e);
     res.render('home', {error: "Failed to load collection."});
   }
-})
+});
 
 
+
+
+
+
+
+
+/* Get "create entry" page. */
+router.get('/createEntry', checkAuth, function(req, res) {
+  const {collectionId, entryType} = req.body;
+  res.render('newEntry', {collectionId: collectionId, entryType: entryType, error: null});
+});
+
+  /* Attempt to create new collection in the database. */
+  router.post('/addEntry', checkAuth, function(req, res) {
+    const{collectionId, entryType, name} = req.body;
+    const userId = req.session.user.id;
+
+    try
+    {
+      switch(entryType)
+      {
+        case 'character':
+          const result = req.db.createCharacter(name, userId, collectionId);
+          res.redirect(`/character/${result.lastInsertRowid}`);
+          break;
+      }
+    }
+    catch(e)
+    {
+      console.log(e);
+      res.render('newEntry', {collectionId: collectionId, entryType: entryType, error: "A " + entryType + " with that name already exists."});
+    }
+  });
 
 
 

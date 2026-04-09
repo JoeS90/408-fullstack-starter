@@ -1,15 +1,20 @@
 # TODO
 
 ## Pages
-- about.ejs
-- character.ejs (add statblock)
-- error.ejs (remove?)
-- faction.ejs
-- home.ejs (Populate world list, connect buttons)
-- layout.ejs (add nav bar)
+- home.ejs 
+    - Populate world list
+    - implement import
+- newEntry.ejs
+- character.ejs
+    - implement associations
+    - add statblock
+- world.ejs 
+    - add delete/export buttons
+    - implement associations
 - location.ejs
 - lore.ejs
-- newEntry.ejs (Type/name)
+- faction.ejs
+- about.ejs
 
     ### Partials
     - navBar.ejs (Home, About, Logout)
