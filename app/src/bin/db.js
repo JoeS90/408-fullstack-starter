@@ -144,7 +144,6 @@ function createDatabaseManager(dbPath) {
             VALUES (?, ?, ?, ?, ?)  
           `);
 
-          console.log(name, userId);
           return stmt.run(name, userId, '/images/PostalGames_placeholder.png', '', '');
         }
         catch (e)

@@ -101,7 +101,6 @@ router.get('/createCollection', checkAuth, function(req, res) {
   router.post('/addCollection', checkAuth, function(req, res) {
     const{name} = req.body;
     const userId = req.session.user.id;
-    console.log("Add collection ( " + name + ", " + userId + ")");
     try
     {
       const collections = req.db.getCollectionsByUser(userId);
@@ -113,7 +112,6 @@ router.get('/createCollection', checkAuth, function(req, res) {
 
       const result = req.db.createCollection(name, userId);
 
-      console.log(result);
       res.redirect(`/collection/${result.lastInsertRowid}`);
     }
     catch(e)
@@ -127,11 +125,9 @@ router.get('/createCollection', checkAuth, function(req, res) {
 router.get('/collection/:id', checkAuth, function(req, res) {
   const collectionId = req.params.id;
   const userId = req.session.user.id;
-  console.log(collectionId, userId);
   try
   {
     const data = req.db.getCollection(collectionId, userId);
-    console.log(data);
     if(!data)
     {
       return res.status(404).send("Collection not found.");
