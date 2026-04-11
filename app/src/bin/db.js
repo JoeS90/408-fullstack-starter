@@ -79,6 +79,7 @@ function createDatabaseManager(dbPath) {
     db: database,
     dbHelpers: 
     {
+      /* USERS */
       createUser: (username, email, password) => 
       {
         const pwd_hash = bcrypt.hashSync(password, 10);
@@ -135,6 +136,7 @@ function createDatabaseManager(dbPath) {
         return user.id;
       },
 
+      /* COLLECTIONS */
       createCollection: (name, userId) =>
       {
         try
@@ -191,6 +193,28 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      modifyCollectionName: (collectionId, userId, title) =>
+      {
+        try
+        {
+          const stmt = database.prepare(`
+            UPDATE collections
+            SET name = ?
+            WHERE id = ?
+              AND creator_id = ?
+          `);
+
+          return stmt.run(title, collectionId, userId);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+
+
+      /* CHARACTERS */
       createCharacter: (name, collectionId) =>
       {
         try
@@ -218,6 +242,30 @@ function createDatabaseManager(dbPath) {
           }
         }
         return false;
+      },
+
+      modifyCollectionText: (collectionId, field, newText) =>
+      {
+        const fields = ['description', 'notes'];
+        if(!fields.includes(field))
+        {
+          throw new Error("Invalid field.");
+        }
+
+        try
+        {
+          const stmt = database.prepare(`
+            UPDATE collections
+            SET ${field} = ?
+            WHERE id = ?
+          `);
+
+          return stmt.run(newText, collectionId);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
       },
 
     }

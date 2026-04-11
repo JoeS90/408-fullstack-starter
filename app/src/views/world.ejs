@@ -1,17 +1,35 @@
 <div class="WorldPage">
     <div class="Main">
         <div class="Title">
-            <h1><%= world.name %></h1>
+            <%- include('partials/titleArea', {
+                collectionId: world.id,
+                entryType: 'collection',
+                entryName: world.name
+            }) %>
         </div>
         <div class="Info">
             <div class="Description">
-                <img src=<%= world.image_path %> alt="Image">
+                <img src="<%= world.image_path %>" alt="Image">
                 <div class="Text">
-                    <%- include('partials/noteArea', {sectionTitle: 'Description', id: 'description', value: world.description }) %>
+                    <%- include('partials/noteArea', {
+                        sectionTitle: 'Description', 
+                        id: 'description', 
+                        value: world.description,
+                        collectionId: world.id,
+                        entryId: world.id,
+                        entryType: 'collection'
+                    }) %>
                 </div>
             </div>    
             <div class="Text">
-                <%- include('partials/noteArea', {sectionTitle: 'Notes', id: 'notes', value: world.notes }) %>
+                <%- include('partials/noteArea', {
+                    sectionTitle: 'Notes', 
+                    id: 'notes', 
+                    value: world.notes,
+                    collectionId: world.id,
+                    entryId: world.id,
+                    entryType: 'collection'
+                }) %>
             </div>
         </div>
     </div>

@@ -1,111 +1,215 @@
-/* Style Variables */
-:root 
-{
-    /* Colors */
-    --base-color: rgb(209, 183, 112);
-    --emphasis-color: rgb(212, 161, 20);
-    --disabled-bg: rgb(128, 128, 128);
+/*============================================================
+    GLOBAL STYLES
+  ============================================================*/
 
-    --text-color: black;
-    --alert-color: maroon;
-    --disabled-text: rgb(64, 64, 64);
+    /* VARIABLES */
+        :root 
+        {
+            /* Colors */
+            --base-color: rgb(209, 183, 112);
+            --emphasis-color: rgb(212, 161, 20);
+            --disabled-bg: rgb(128, 128, 128);
 
-    /* Fonts */
-    --base-font-size: 16px;
-    --font-family: 'Papyrus', 'Garamond', sans-serif;
+            --text-color: black;
+            --alert-color: maroon;
+            --disabled-text: rgb(64, 64, 64);
 
-    /* Borders */
-    --section-border: 2px solid black;
-}
+            /* Fonts */
+            --base-font-size: 16px;
+            --font-family: 'Papyrus', 'Garamond', sans-serif;
 
-/* Global settings to remove browser defaults and include borders in size calculations */
-* 
-{
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+            /* Borders */
+            --section-border: 2px solid black;
+        }
 
-html
-{
-    height: 100%;
-}
+    /* SET DEFAULTS */
+        /* Remove browser defaults. Include borders in size calculations */
+        * 
+        {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-/* Set the standardized background */
-body
-{
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    background-color: var(--base-color);
-    color: var(--text-color);
-    font-family: var(--font-family);
-    font-size: var(--base-font-size);
-    /* TODO: Add a background radial gradient or texture */
-}
+        html
+        {
+            height: 100%;
+        }
 
-header
-{
-    flex: 0 0 auto;
-}
+        /* Set the standardized background */
+        body
+        {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background-color: var(--base-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            font-size: var(--base-font-size);
+            /* TODO: Add a background radial gradient or texture */
+        }
 
-main
-{
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-}
+    /* PAGE LAYOUT REGIONS */
+        header
+        {
+            flex: 0 0 auto;
+        }
 
-footer
-{
-    flex: 0 0 auto;
-}
+        main
+        {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
 
-form
-{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center;
-}
+        footer
+        {
+            flex: 0 0 auto;
+        }
 
-button, input, select, textarea
-{
-    font-family: inherit;
-    font-size: inherit;
-}
+    /* HTML TAGS */
+        form
+        {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
 
-a
-{
-    color: var(--text-color);
-    text-decoration: none;
-    font-weight: bold;
-}
+        button, input, select, textarea
+        {
+            font-family: inherit;
+            font-size: inherit;
+        }
 
-.NavBar
-{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 10px 50px;
-    justify-content: space-between;
+        a
+        {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-    background-color: var(--emphasis-color);
+        h1
+        {
+            font-size: 3rem;
+        }
 
-    font-size: 1.2rem;
-}
-    /* Make navigation buttons and links consistent. Button necessary for secure logout */
-    .NavBar a, .navButton
+        h2
+        {
+            font-size: 2rem;
+        }
+
+/*============================================================
+    PARTIALS
+  ============================================================*/
+    /* NAVIGATION BAR */
+        .NavBar
+        {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 10px 50px;
+            justify-content: space-between;
+
+            background-color: var(--emphasis-color);
+
+            font-size: 1.2rem;
+        }
+
+        /* Make navigation buttons and links consistent. Button necessary for secure logout */
+        .NavBar a, .navButton
+        {
+            font-family: inherit;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-decoration: none;
+            border: transparent;
+            cursor: pointer;
+            background: none;
+        }
+
+    /* TITLE AREA */
+        .TitleArea
+        {
+            display: flex;
+            flex-direction: row;
+            flex: 0 0 auto;
+            align-items: center;
+            justify-content: left;
+            margin: 0;
+        }
+
+        .TitleArea-Text
+        {
+            flex: 1;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 2.5rem;
+            font-weight: bold;
+            background-color: var(--base-color);
+            border: transparent;
+        }
+
+    /* NOTE AREA */
+    .NoteArea
     {
-        font-family: inherit;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+
+        border: var(--section-border);
+    }
+
+    .NoteArea header
+    {
+        display: flex;
+        flex-direction: row;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0;
+    }
+
+    .NoteArea header .SectionTitle
+    {
         font-size: 1.2rem;
         font-weight: bold;
-        color: var(--text-color);
-        text-decoration: none;
-        border: transparent;
-        cursor: pointer;
-        background: none;
     }
+
+    .EditToggle
+    {
+        padding: 2px;
+
+        background-color: var(--emphasis-color);
+    }
+
+    .NoteArea textarea
+    {
+        flex: 1;
+        resize: none;
+
+        font-size: 1rem;
+        font-family: 'Papyrus', 'Garamond', sans-serif;
+    }
+
+
+/* Formatting for a StatBlock element */
+.StatBlock
+{
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+
+    border: var(--section-border);
+}
+
+/*============================================================
+    PAGE FORMATTING
+  ============================================================*/
 
 /* Format for Menu pages */
 .SplashPage
@@ -288,16 +392,9 @@ a
 
 }
 
-/* Element formatting */
-h1
-{
-    font-size: 3rem;
-}
 
-h2
-{
-    font-size: 2rem;
-}
+
+/* OTHER ELEMENTS */
 
 .MenuButton
 {
@@ -333,57 +430,3 @@ h2
     color: var(--alert-color);
 }
 
-/* Formatting for a NoteArea Element */
-.NoteArea
-{
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    min-height: 0;
-
-    border: var(--section-border);
-}
-
-    .NoteArea header
-    {
-        display: flex;
-        flex-direction: row;
-        flex: 0 0 auto;
-        align-items: center;
-        justify-content: space-between;
-        margin: 0;
-    }
-
-    .NoteArea header .SectionTitle
-    {
-        font-size: 1.2rem;
-        font-weight: bold;
-    }
-
-    .NoteArea header .EditToggle
-    {
-        padding: 2px;
-
-        background-color: var(--emphasis-color);
-    }
-
-    .NoteArea textarea
-    {
-        flex: 1;
-        resize: none;
-
-        font-size: 1rem;
-        font-family: 'Papyrus', 'Garamond', sans-serif;
-    }
-
-
-/* Formatting for a StatBlock element */
-.StatBlock
-{
-    flex: 2;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-
-    border: var(--section-border);
-}

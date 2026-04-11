@@ -1,0 +1,10 @@
+<!-- Define the name display for a -->
+<div class="TitleArea" data-cid="<%= collectionId %>" data-type="<%= entryType %>" data-title="<%= entryName %>">
+    <button class="EditToggle" type="button" onclick="titleEditToggle(this)">Edit</button>
+    <input 
+        type="text" 
+        class="TitleArea-Text"
+        value="<%= entryName %>"
+        readonly
+    >
+</div>
