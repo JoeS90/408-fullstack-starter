@@ -228,7 +228,7 @@ const USER_IMAGE_PATH = '/user_uploads/images';
 
       try
       {
-        const data = req.db.getCollection(collectionId, userId);
+        const data = req.db.getCollection(cid, uid);
 
         if(!data)
         {

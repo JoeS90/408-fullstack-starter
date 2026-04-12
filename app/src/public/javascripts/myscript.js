@@ -17,7 +17,7 @@ async function deleteWorld(id, name)
     });
 
     const d1 = await r1.json();
-    const numEntries = d1.length;
+    const numEntries = d1.entries.length;
 
     const confirmed = confirm(`${name} has ${numEntries} entries. All entries will be permanently deleted. Are you sure?`);
 

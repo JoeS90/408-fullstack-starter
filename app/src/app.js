@@ -45,7 +45,7 @@ app.use(session(
       {
         maxAge: 12 * 60 * 60 * 1000, /* Sessions expire after 12 hours of inactivity */
         httpOnly: true, /* prevents JS XSS attacks from stealing the cookie */
-        secure: process.env.NODE_ENV === 'production'
+        secure: false //process.env.NODE_ENV === 'production'
       }
   }
 ));
