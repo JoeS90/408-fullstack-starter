@@ -281,12 +281,12 @@ const USER_IMAGE_PATH = 'user_uploads/images';
   ============================================================*/
   /* TITLE */
     router.post('/updateTitle', checkAuth, function(req, res) {
-      const { collectionId, type, newTitle } = req.body;
+      const { collectionId, entryType, newTitle } = req.body;
       const userId = req.session.user.id;
 
       try
       {
-        switch(type)
+        switch(entryType)
         {
           case 'collection':
             const collections = req.db.getCollectionsByUser(userId);
@@ -318,12 +318,12 @@ const USER_IMAGE_PATH = 'user_uploads/images';
   
   /* NOTE AREA */
     router.post('/updateText', checkAuth, function(req, res) {
-      const { collectionId, entryId, type, field, newText } = req.body;
+      const { collectionId, entryId, entryType, field, newText } = req.body;
       const userId = req.session.user.id;
 
       try
       {
-        switch(type)
+        switch(entryType)
         {
           case 'collection':
             if(req.db.getCollection(collectionId, userId) === null)

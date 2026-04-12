@@ -51,8 +51,8 @@ async function titleEditToggle(button)
   const titleArea = button.closest('.TitleArea');
   const title = titleArea.querySelector('input');
   const origTitle = titleArea.dataset.title;
-  const type = titleArea.dataset.type;
-  const cid = titleArea.dataset.cid;
+  const entryType = titleArea.dataset.type;
+  const collectionId = titleArea.dataset.cid;
 
   if(title.hasAttribute('readonly'))
   {
@@ -82,7 +82,7 @@ async function titleEditToggle(button)
         const response = await fetch('/updateTitle', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({cid, type, newTitle})
+          body: JSON.stringify({collectionId, entryType, newTitle})
         });
 
         if(!response.ok)
@@ -110,9 +110,9 @@ async function noteEditToggle(button)
 {
   const noteArea = button.closest('.NoteArea');
   const text = noteArea.querySelector('textarea');
-  const cid = noteArea.dataset.cid;
-  const eid = noteArea.dataset.eid;
-  const type = noteArea.dataset.type;
+  const collectionId = noteArea.dataset.cid;
+  const entryId = noteArea.dataset.eid;
+  const entryType = noteArea.dataset.type;
   const field = text.id;
 
   if(text.hasAttribute('readonly'))
@@ -131,7 +131,7 @@ async function noteEditToggle(button)
       const response = await fetch('/updateText', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({cid, eid, type, field, newText})
+        body: JSON.stringify({collectionId, entryId, entryType, field, newText})
       });
 
       if(!response.ok)
