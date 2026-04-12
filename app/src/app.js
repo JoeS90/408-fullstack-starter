@@ -26,6 +26,7 @@ if (!fs.existsSync(dataDir)) {
 const databaseManager = db.createDatabaseManager(dbPath);
 
 /* Setup session tracking */
+app.set('trust proxy', 1);
 app.use(session(
   {
     store: new SqlStore(
@@ -45,7 +46,9 @@ app.use(session(
       {
         maxAge: 12 * 60 * 60 * 1000, /* Sessions expire after 12 hours of inactivity */
         httpOnly: true, /* prevents JS XSS attacks from stealing the cookie */
-        secure: false //process.env.NODE_ENV === 'production'
+        // TODO: FIXME. "secure" Doesn't work with AWS until I establish SSL certificates.
+        secure: false
+        // secure: process.env.NODE_ENV === 'production'
       }
   }
 ));

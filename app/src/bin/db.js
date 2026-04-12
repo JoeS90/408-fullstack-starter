@@ -278,6 +278,7 @@ function createDatabaseManager(dbPath) {
       {
         try
         {
+          // TODO: Keep this up to date
           const stmt = database.prepare(`
               SELECT id, name, 'character' as type
               FROM characters
@@ -325,8 +326,6 @@ function createDatabaseManager(dbPath) {
         }
         return false;
       },
-
-      
 
     }
   };

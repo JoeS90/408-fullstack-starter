@@ -1,10 +1,11 @@
 <!-- Define the standard note-keeping section -->
 <div class="NoteArea" data-cid="<%= collectionId %>" data-eid="<%= entryId %>" data-type="<%= entryType %>" >
-    <header>
-        <span class="SectionTitle"><%= sectionTitle %></span>
+    <div class="NoteArea-Head">
+        <span class="NoteArea-Title"><%= sectionTitle %></span>
         <button class="EditToggle" type="button" onclick="noteEditToggle(this)">Edit</button>
-    </header>
+    </div>
     <textarea
+        class="NoteArea-Text"
         id="<%= id %>"
         name="<%= typeof name !== 'undefined' ? name : id %>"
         placeholder="<%= typeof placeholder !== 'undefined' ? placeholder : '' %>"

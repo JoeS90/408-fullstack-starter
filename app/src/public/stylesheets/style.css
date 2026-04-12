@@ -3,8 +3,7 @@
   ============================================================*/
 
     /* VARIABLES */
-        :root 
-        {
+        :root {
             /* Colors */
             --base-color: rgb(209, 183, 112);
             --emphasis-color: rgb(212, 161, 20);
@@ -24,21 +23,18 @@
 
     /* SET DEFAULTS */
         /* Remove browser defaults. Include borders in size calculations */
-        * 
-        {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        html
-        {
+        html {
             height: 100%;
         }
 
         /* Set the standardized background */
-        body
-        {
+        body {
             display: flex;
             flex-direction: column;
             height: 100%;
@@ -50,58 +46,49 @@
         }
 
     /* PAGE LAYOUT REGIONS */
-        header
-        {
+        header {
             flex: 0 0 auto;
         }
 
-        main
-        {
+        main {
             flex: 1;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
-        footer
-        {
+        footer {
             flex: 0 0 auto;
         }
 
     /* HTML TAGS */
-        form
-        {
+        form {
             display: flex;
             flex-direction: column;
             gap: 10px;
             align-items: center;
         }
 
-        button, input, select, textarea
-        {
+        button, input, select, textarea {
             font-family: inherit;
             font-size: inherit;
         }
 
-        a
-        {
+        a {
             color: var(--text-color);
             text-decoration: none;
             font-weight: bold;
         }
 
-        h1
-        {
+        h1 {
             font-size: 3rem;
         }
 
-        h2
-        {
+        h2 {
             font-size: 2rem;
         }
 
-        img
-        {
+        img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
@@ -111,8 +98,7 @@
     PARTIALS
   ============================================================*/
     /* NAVIGATION BAR */
-        .NavBar
-        {
+        .NavBar {
             display: flex;
             flex-direction: row;
             align-items: center;
@@ -125,8 +111,7 @@
         }
 
         /* Make navigation buttons and links consistent. Button necessary for secure logout */
-        .NavBar a, .navButton
-        {
+        .NavBar a, .navButton {
             font-family: inherit;
             font-size: 1.2rem;
             font-weight: bold;
@@ -138,8 +123,7 @@
         }
 
     /* TITLE AREA */
-        .TitleArea
-        {
+        .TitleArea {
             display: flex;
             flex-direction: row;
             flex: 0 0 auto;
@@ -148,8 +132,7 @@
             margin: 0;
         }
 
-        .TitleArea-Text
-        {
+        .TitleArea-Text {
             flex: 1;
             align-items: center;
             justify-content: center;
@@ -162,8 +145,7 @@
         }
 
     /* NOTE AREA */
-        .NoteArea
-        {
+        .NoteArea {
             display: flex;
             flex-direction: column;
             flex: 1;
@@ -172,8 +154,7 @@
             border: var(--section-border);
         }
 
-        .NoteArea header
-        {
+        .NoteArea-Head {
             display: flex;
             flex-direction: row;
             flex: 0 0 auto;
@@ -182,15 +163,12 @@
             margin: 0;
         }
 
-        .NoteArea header .SectionTitle
-        {
+        .NoteArea-Title {
             font-size: 1.2rem;
             font-weight: bold;
         }
-
         
-        .NoteArea textarea
-        {
+        .NoteArea-Text {
             flex: 1;
             resize: none;
             overflow-y: auto;
@@ -200,8 +178,7 @@
         }
 
     /* IMAGE AREA */
-        .ImageArea
-        {
+        .ImageArea {
             flex: 1;
             display: flex;
             align-items: center;
@@ -219,8 +196,7 @@
     
     /* SHARED ELEMENTS */
 
-        .EditToggle
-        {
+        .EditToggle {
             padding: 2px;
 
             background-color: var(--emphasis-color);
@@ -257,8 +233,7 @@
 }
 
 /* WORLD/COLLECTION DISPLAY */
-    .WorldPage
-    {
+    .WorldPage {
         flex: 1;
         display: flex;
         flex-direction: row;
@@ -271,8 +246,7 @@
         overflow: hidden;
     }
 
-    .WorldPage-Main
-    {
+    .WorldPage-Main {
         flex: 4;
         display: flex;
         flex-direction: column;
@@ -280,14 +254,12 @@
         min-height: 0;
     }
 
-        .WorldPage-Title
-        {
+        .WorldPage-Title {
             flex: 0 0 auto;
             margin: 10px;
         }
 
-        .WorldPage-Info
-        {
+        .WorldPage-Info {
             flex: 1;
             display: flex;
             flex-direction: row;
@@ -296,8 +268,7 @@
             min-height: 0;
         }
 
-            .WorldPage-Description
-            {
+            .WorldPage-Description {
                 flex: 1;
                 display: flex;
                 flex-direction: column;
@@ -306,8 +277,7 @@
                 min-height: 0;
             }
 
-    .WorldPage-Sidebar
-    {
+    .WorldPage-Sidebar {
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -316,8 +286,7 @@
         min-height: 0;
     }
 
-        .WorldPage-Associations
-        {
+        .WorldPage-Associations {
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -326,8 +295,7 @@
             min-height: 0;
         }
 
-        .WorldPage-Manage
-        {
+        .WorldPage-Manage {
             flex: 0 0 auto;
             display: flex;
             flex-direction: row;
@@ -428,8 +396,7 @@
 
 /* OTHER ELEMENTS */
 
-.MenuButton
-{
+.MenuButton {
     width: fit-content;
     padding-left: 5px;
     padding-right: 5px;
@@ -439,14 +406,12 @@
     font-size: 2rem;
 }
 
-.MenuButton.disabled
-{
+.MenuButton.disabled {
     background-color: rgb(128, 128, 128);
     color: rgb(64, 64, 64)
 }
 
-.DropDown
-{
+.DropDown {
     width: max-content;
     padding-left: 5px;
     padding-right: 15px;
@@ -456,8 +421,7 @@
     font-size: 200%;
 }
 
-.ErrorMessage
-{
+.ErrorMessage {
     font-weight: bold;
     color: var(--alert-color);
 }

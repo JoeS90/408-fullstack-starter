@@ -1,28 +1,19 @@
 # TODO
 
 ## Pages
-- home.ejs 
-    - Populate world list
-    - implement import
+- world.ejs
+    - implement associations
 - newEntry.ejs
 - character.ejs
-    - implement associations
-    - add statblock
-- world.ejs 
-    - add delete/export buttons
-    - implement associations
 - location.ejs
 - lore.ejs
 - faction.ejs
 - about.ejs
 
     ### Partials
-    - navBar.ejs (Home, About, Logout)
-    - noteArea.ejs (save to db)
-    - statBlock.ejs
-    - title.ejs (Editable, add to all relevant pages)
-    - Image
+    - imageArea.ejs
     - Associations
+    - statBlock.ejs
     - Inventory
 
 ## Database
@@ -30,10 +21,9 @@
 - Default data (stat blocks)
 
 ## Additional Features
-- Move/copy to collection
-- Delete entry
 - Encrypt DB
-- Import/Export data
+- Move/copy to collection
+- Import/Export data (pdf vs zip? both?)
 - Share collection
 - Obfuscate collection
 - Offline mode?
