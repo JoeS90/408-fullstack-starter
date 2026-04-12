@@ -1,0 +1,14 @@
+<!-- Define the standard image display/upload section -->
+<div class="ImageArea" 
+    data-cid="<%= collectionId %>" 
+    data-eid="<%= entryId %>" 
+    data-type="<%= entryType %>" 
+    data-path="<%= imagePath %>"
+>
+    <img 
+        id="EntryImage" 
+        src="<%= imagePath || '/images/PostalGames_placeholder.png' %>" 
+        onclick="uploadImage()" 
+        alt="<%= entryType %> Image"
+    >
+</div>

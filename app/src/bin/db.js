@@ -146,9 +146,27 @@ function createDatabaseManager(dbPath) {
             VALUES (?, ?, ?, ?, ?)  
           `);
 
-          return stmt.run(name, userId, '/images/PostalGames_placeholder.png', '', '');
+          return stmt.run(name, userId, '', '', '');
         }
         catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      deleteCollection: (collectionId, userId) =>
+      {
+        try
+        {
+          const stmt = database.prepare(`
+            DELETE FROM collections
+            WHERE id = ?
+              AND creator_id = ?
+          `);
+
+          return stmt.run(collectionId, userId);
+        }
+        catch(e)
         {
           throw e; // TODO: add specific handling
         }
@@ -193,7 +211,7 @@ function createDatabaseManager(dbPath) {
         }
       },
 
-      modifyCollectionName: (collectionId, userId, title) =>
+      modifyCollectionName: (collectionId, userId, newName) =>
       {
         try
         {
@@ -204,7 +222,7 @@ function createDatabaseManager(dbPath) {
               AND creator_id = ?
           `);
 
-          return stmt.run(title, collectionId, userId);
+          return stmt.run(newName, collectionId, userId);
         }
         catch (e)
         {
@@ -212,7 +230,71 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      modifyCollectionText: (collectionId, userId, field, newText) =>
+      {
+        const fields = ['description', 'notes'];
+        if(!fields.includes(field))
+        {
+          throw new Error("Invalid field.");
+        }
 
+        try
+        {
+          const stmt = database.prepare(`
+            UPDATE collections
+            SET ${field} = ?
+            WHERE id = ?
+              AND creator_id = ?
+          `);
+
+          return stmt.run(newText, collectionId, userId);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      modifyCollectionImage: (collectionId, userId, newPath) =>
+      {
+        try
+        {
+          const stmt = database.prepare(`
+            UPDATE collections
+            SET image_path = ?
+            WHERE id = ?
+              AND creator_id = ?
+          `);
+
+          return stmt.run(newPath, collectionId, userId);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      getEntriesByCollection(collectionId)
+      {
+        try
+        {
+          const stmt = database.prepare(`
+              SELECT id, name, 'character' as type
+              FROM characters
+              WHERE collection_id = :cid
+            UNION ALL
+              SELECT id, name, 'location' as type
+              FROM locations
+              WHERE collection_id = :cid
+          `);
+
+          return stmt.all({cid: collectionId});
+        }
+        catch(e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
 
       /* CHARACTERS */
       createCharacter: (name, collectionId) =>
@@ -244,29 +326,7 @@ function createDatabaseManager(dbPath) {
         return false;
       },
 
-      modifyCollectionText: (collectionId, field, newText) =>
-      {
-        const fields = ['description', 'notes'];
-        if(!fields.includes(field))
-        {
-          throw new Error("Invalid field.");
-        }
-
-        try
-        {
-          const stmt = database.prepare(`
-            UPDATE collections
-            SET ${field} = ?
-            WHERE id = ?
-          `);
-
-          return stmt.run(newText, collectionId);
-        }
-        catch (e)
-        {
-          throw e; // TODO: add specific handling
-        }
-      },
+      
 
     }
   };

@@ -7,6 +7,45 @@ function selectWorld()
   }
 }
 
+async function deleteWorld(id, name)
+{
+  try
+  {
+    const r1 = await fetch(`/allEntries/${id}`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    const d1 = await r1.json();
+    const numEntries = d1.length;
+
+    const confirmed = confirm(`${name} has ${numEntries} entries. All entries will be permanently deleted. Are you sure?`);
+
+    if(confirmed)
+    {
+      const r2 = await fetch(`/deleteCollection/${id}`, {
+        method: 'DELETE'
+      });
+
+      if(r2.ok)
+      {
+        alert(`${name} has been lost to the void.`);
+        window.location.href = '/home';
+        return;
+      }
+      else
+      {
+        const d2 = await r2.json();
+        alert(`Failed to delete ${name}:` + d2.error);
+      }
+    }
+  }
+  catch(e)
+  {
+    alert(`Failed to delete ${name}:` + e.message);
+  }
+}
+
 async function titleEditToggle(button)
 {
   const titleArea = button.closest('.TitleArea');
@@ -113,3 +152,42 @@ async function noteEditToggle(button)
   }
 }
 
+async function uploadImage(input)
+{
+  const file = input.files[0]; // Ask about this
+
+  if(!file) return;
+
+  const imageArea = input.closest('.ImageArea');
+  const payload = new FormData();
+
+  payload.append('image', file);
+  payload.append('collectionId', imageArea.dataset.cid);
+  payload.append('entryId', imageArea.dataset.eid);
+  payload.append('type', imageArea.dataset.type);
+
+  try
+  {
+    const response = await fetch('/updateImage', {
+      method: 'POST',
+      body: payload
+    });
+
+    if(!response.ok)
+    {
+      const data = await response.json();
+      throw new Error(data.error || "Save failed.");
+    }
+    else
+    {
+      const data = await response.json();
+      const display = imageArea.getElementById('EntryImage');
+      display.src = data.imagePath;
+    }
+  }
+  catch(e)
+  {
+    console.log(e);
+    alert(e);
+  }
+}

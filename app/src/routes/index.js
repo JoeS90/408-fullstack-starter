@@ -1,5 +1,8 @@
 var express = require('express');
 var router = express.Router();
+const fs = require('fs');
+const path = require('path');
+const USER_IMAGE_PATH = '/user_uploads/images';
 
 
 /*============================================================
@@ -13,7 +16,19 @@ var router = express.Router();
     {
       return next();
     }
-    res.redirect('/');
+    else
+    {
+      const isFetch = req.headers['content-type'] === 'application/json';
+
+      if(isFetch)
+      {
+        return res.status(401).json({ error: "Session expired. Please return to Home and login."})
+      }
+      else
+      {
+        res.redirect('/');
+      }
+    }
   }
 
 /*============================================================
@@ -135,11 +150,30 @@ var router = express.Router();
       }
     });
 
-    router.post('/deleteCollection', checkAuth, function(req, res) {
-      // TODO
-      alert("Delete collection not implemented");
-      res.redirect('/home');
-    })
+    router.delete('/deleteCollection/:id', checkAuth, function(req, res) {
+      const cid = req.params.id;
+      const uid = req.session.user.id;
+
+      try
+      {
+        //TODO: delete all associated images
+
+        const data = req.db.getCollection(cid, uid);
+        if(!data)
+        {
+          return res.status(404).json({error: "Collection not found."});
+        }
+
+        const result = req.db.deleteCollection(cid, uid);
+
+        res.status(200).json({success: true});
+      }
+      catch(e)
+      {
+        console.log(e);
+        res.status(500).json({error: e.message});
+      }
+    });
 
     router.get('/collection/:id', checkAuth, function(req, res) {
       const collectionId = req.params.id;
@@ -149,7 +183,7 @@ var router = express.Router();
         const data = req.db.getCollection(collectionId, userId);
         if(!data)
         {
-          return res.status(404).send("Collection not found.");
+          return res.status(404).json({error: "Collection not found."});
         }
 
         res.render('world', {world: data});
@@ -188,7 +222,29 @@ var router = express.Router();
       }
     });
 
+    router.get('/allEntries/:id', checkAuth, function(req, res) {
+      const cid = req.params.id;
+      const uid = req.session.user.id;
 
+      try
+      {
+        const data = req.db.getCollection(collectionId, userId);
+
+        if(!data)
+        {
+          return res.status(404).send("Collection not found.");
+        }
+
+        const entries = req.db.getEntriesByCollection(cid);
+
+        return res.status(200).json({entries});
+      }
+      catch(e)
+      {
+        console.log(e);
+        res.status(500).json({error: e.message});
+      }
+    });
 
 
 /*============================================================
@@ -246,7 +302,62 @@ var router = express.Router();
               res.status(404).json({error: "Collection not found."});
               return;              
             }
-            req.db.modifyCollectionText(cid, field, newText);
+            req.db.modifyCollectionText(cid, userId, field, newText);
+            break;
+          case 'character':
+            break;
+          case 'location':
+            break;
+          default:
+            const err = "Invalid request for /updateText";
+            console.log(err);
+            return res.status(400).json({error: err});
+        }
+        
+        res.status(200).json({ success: true });
+      }
+      catch(e)
+      {
+        console.log(e);
+        res.status(500).json({error: e});
+      }
+    });
+
+  /* IMAGE AREA */
+    router.post('/updateImage', checkAuth, function(req, res) {
+      const { cid, eid, type } = req.body;
+      const userId = req.session.user.id;
+
+      try
+      {
+        const oldPath = req.db.getCollection(cid, userId).image_path;
+        const newPath = '';
+
+        /* Delete the old image if there is one. */
+        if(oldPath && oldPath !== '')
+        {
+          /* Create a system-agnostic absolute path. (Works on dev environment and server.) */
+          const absPath = path.join(__dirname, '../public', oldPath);
+          /* Delete the existing file. */
+          if(fs.existsSync(absPath))
+          {
+            fs.unlinkSync(absPath);
+          }
+        }
+
+
+
+
+
+        switch(type)
+        {
+          case 'collection':
+            if(req.db.getCollection(cid, userId) === null)
+            {
+              res.status(404).json({error: "Collection not found."});
+              return;              
+            }
+            req.db.modifyCollectionImage(cid, userId, newPath);
             break;
           case 'character':
             break;

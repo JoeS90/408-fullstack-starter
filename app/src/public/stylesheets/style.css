@@ -60,6 +60,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         footer
@@ -97,6 +98,13 @@
         h2
         {
             font-size: 2rem;
+        }
+
+        img
+        {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
 
 /*============================================================
@@ -145,6 +153,7 @@
             flex: 1;
             align-items: center;
             justify-content: center;
+            margin-left: 20px;
 
             font-size: 2.5rem;
             font-weight: bold;
@@ -153,48 +162,69 @@
         }
 
     /* NOTE AREA */
-    .NoteArea
-    {
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-        min-height: 0;
+        .NoteArea
+        {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
 
-        border: var(--section-border);
-    }
+            border: var(--section-border);
+        }
 
-    .NoteArea header
-    {
-        display: flex;
-        flex-direction: row;
-        flex: 0 0 auto;
-        align-items: center;
-        justify-content: space-between;
-        margin: 0;
-    }
+        .NoteArea header
+        {
+            display: flex;
+            flex-direction: row;
+            flex: 0 0 auto;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0;
+        }
 
-    .NoteArea header .SectionTitle
-    {
-        font-size: 1.2rem;
-        font-weight: bold;
-    }
+        .NoteArea header .SectionTitle
+        {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
 
-    .EditToggle
-    {
-        padding: 2px;
+        
+        .NoteArea textarea
+        {
+            flex: 1;
+            resize: none;
+            overflow-y: auto;
 
-        background-color: var(--emphasis-color);
-    }
+            font-size: 1rem;
+            font-family: 'Papyrus', 'Garamond', sans-serif;
+        }
 
-    .NoteArea textarea
-    {
-        flex: 1;
-        resize: none;
+    /* IMAGE AREA */
+        .ImageArea
+        {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            min-width: 0;
+            min-height: 0;
+            width: auto;
+            height: auto;
+            max-height: 100%;
+            max-width: 100%;
 
-        font-size: 1rem;
-        font-family: 'Papyrus', 'Garamond', sans-serif;
-    }
+            border: var(--section-border);
+        }
+    
+    /* SHARED ELEMENTS */
 
+        .EditToggle
+        {
+            padding: 2px;
+
+            background-color: var(--emphasis-color);
+        }
 
 /* Formatting for a StatBlock element */
 .StatBlock
@@ -214,8 +244,8 @@
 /* Format for Menu pages */
 .SplashPage
 {
-    display: flex;
     flex: 1;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-content: center;
@@ -226,21 +256,22 @@
     text-align: center;
 }
 
-/* Format for the World page */
-.WorldPage
-{
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
-    padding: 20px;
+/* WORLD/COLLECTION DISPLAY */
+    .WorldPage
+    {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+        padding: 20px;
 
-    min-height: 0;
-    height: 100vh;
-    width: 100%;
-}
+        min-height: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
 
-    .WorldPage .Main
+    .WorldPage-Main
     {
         flex: 4;
         display: flex;
@@ -249,60 +280,61 @@
         min-height: 0;
     }
 
-        .WorldPage .Main .Title
+        .WorldPage-Title
         {
             flex: 0 0 auto;
             margin: 10px;
         }
 
-        .WorldPage .Main .Info
+        .WorldPage-Info
         {
+            flex: 1;
             display: flex;
             flex-direction: row;
-            flex: 1;
             gap: 20px;
 
             min-height: 0;
         }
 
-            .WorldPage .Main .Info .Description
+            .WorldPage-Description
             {
+                flex: 1;
                 display: flex;
                 flex-direction: column;
-                flex: 1;
                 gap: 20px;
+            
+                min-height: 0;
             }
 
-                .WorldPage .Main .Info .Description img
-                {
-                    flex: 1;
-                    overflow: hidden;
-                    min-width: 0;
-                    min-height: 0;
-                    width: auto;
-                    height: auto;
-                    max-height: 100%;
-                    max-width: 100%;
-                    object-fit: contain;
-
-                    border: var(--section-border);
-                }
-
-                .WorldPage .Main .Info .Text
-                {
-                    flex: 1;
-                    display: flex;
-                    height: 100%;
-                    width: 100%;
-                }
-
-    .WorldPage .Links
+    .WorldPage-Sidebar
     {
-        display: flex;
         flex: 1;
+        display: flex;
         flex-direction: column;
         gap: 20px;
+        
+        min-height: 0;
     }
+
+        .WorldPage-Associations
+        {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            
+            min-height: 0;
+        }
+
+        .WorldPage-Manage
+        {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-around;
+            margin: 10px;
+        }
 
 /* Format for the Character page */
 .CharacterPage
