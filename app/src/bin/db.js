@@ -297,6 +297,33 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      getImagesByCollection(collectionId)
+      {
+        try
+        {
+          // TODO: Keep this up to date
+          const stmt = database.prepare(`
+              SELECT image_path
+              FROM collections
+              WHERE id = :cid
+            UNION ALL
+              SELECT image_path
+              FROM characters
+              WHERE collection_id = :cid
+            UNION ALL
+              SELECT image_path
+              FROM locations
+              WHERE collection_id = :cid
+          `);
+          
+          return stmt.all({cid: collectionId});
+        }
+        catch(e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
       /* CHARACTERS */
       createCharacter: (name, collectionId) =>
       {

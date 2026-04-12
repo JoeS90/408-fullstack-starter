@@ -152,19 +152,19 @@ async function noteEditToggle(button)
   }
 }
 
-async function uploadImage(input)
+async function uploadImage(event)
 {
-  const file = input.files[0]; // Ask about this
+  const file = event.target.files[0];
 
   if(!file) return;
 
-  const imageArea = input.closest('.ImageArea');
+  const imageArea = event.target.closest('.ImageArea');
   const payload = new FormData();
 
   payload.append('image', file);
   payload.append('collectionId', imageArea.dataset.cid);
   payload.append('entryId', imageArea.dataset.eid);
-  payload.append('type', imageArea.dataset.type);
+  payload.append('entryType', imageArea.dataset.type);
 
   try
   {
@@ -173,21 +173,23 @@ async function uploadImage(input)
       body: payload
     });
 
+    const data = await response.json();
+
     if(!response.ok)
     {
-      const data = await response.json();
       throw new Error(data.error || "Save failed.");
     }
     else
     {
-      const data = await response.json();
-      const display = imageArea.getElementById('EntryImage');
+      const display = imageArea.querySelector('#EntryImage');
       display.src = data.imagePath;
+
+      event.target.value = '';
     }
   }
   catch(e)
   {
     console.log(e);
-    alert(e);
+    alert(e.message);
   }
 }

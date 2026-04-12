@@ -1,8 +1,9 @@
 var express = require('express');
 var router = express.Router();
+const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
-const USER_IMAGE_PATH = '/user_uploads/images';
+const USER_IMAGE_PATH = 'user_uploads/images';
 
 
 /*============================================================
@@ -30,6 +31,28 @@ const USER_IMAGE_PATH = '/user_uploads/images';
       }
     }
   }
+
+  /* Configure Multer for handling image uploads */
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      const userId = req.session.user.id;
+      const absPath = path.join(__dirname, '../public', USER_IMAGE_PATH, 'user_' + userId.toString());
+
+      /* If the user doesn't have a folder, make one */
+      if(!fs.existsSync(absPath))
+      {
+        fs.mkdirSync(absPath, {recursive: true});
+      }
+      cb(null, absPath);
+    },
+    filename: (req, file, cb) => {
+      const newImgId = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const extension = path.extname(file.originalname);
+      cb(null, newImgId + extension);
+    }
+  });
+
+  const upload = multer({ storage: storage});
 
 /*============================================================
     ADMIN ROUTING
@@ -151,20 +174,26 @@ const USER_IMAGE_PATH = '/user_uploads/images';
     });
 
     router.delete('/deleteCollection/:id', checkAuth, function(req, res) {
-      const cid = req.params.id;
-      const uid = req.session.user.id;
+      const collectionId = req.params.id;
+      const userId = req.session.user.id;
 
       try
       {
-        //TODO: delete all associated images
+        const images = req.db.getImagesByCollection(collectionId);
+        images.forEach(image => {
+          const absPath = path.join(__dirname, '../public', image.image_path);
+          if(fs.existsSync(absPath)) {
+            fs.unlinkSync(absPath);
+          }
+        });
 
-        const data = req.db.getCollection(cid, uid);
+        const data = req.db.getCollection(collectionId, userId);
         if(!data)
         {
           return res.status(404).json({error: "Collection not found."});
         }
 
-        const result = req.db.deleteCollection(cid, uid);
+        const result = req.db.deleteCollection(collectionId, userId);
 
         res.status(200).json({success: true});
       }
@@ -223,19 +252,19 @@ const USER_IMAGE_PATH = '/user_uploads/images';
     });
 
     router.get('/allEntries/:id', checkAuth, function(req, res) {
-      const cid = req.params.id;
-      const uid = req.session.user.id;
+      const collectionId = req.params.id;
+      const userId = req.session.user.id;
 
       try
       {
-        const data = req.db.getCollection(cid, uid);
+        const data = req.db.getCollection(collectionId, userId);
 
         if(!data)
         {
           return res.status(404).send("Collection not found.");
         }
 
-        const entries = req.db.getEntriesByCollection(cid);
+        const entries = req.db.getEntriesByCollection(collectionId);
 
         return res.status(200).json({entries});
       }
@@ -252,7 +281,7 @@ const USER_IMAGE_PATH = '/user_uploads/images';
   ============================================================*/
   /* TITLE */
     router.post('/updateTitle', checkAuth, function(req, res) {
-      const { cid, type, newTitle } = req.body;
+      const { collectionId, type, newTitle } = req.body;
       const userId = req.session.user.id;
 
       try
@@ -266,7 +295,7 @@ const USER_IMAGE_PATH = '/user_uploads/images';
               res.status(409).json({error: "That name is already in use."})
               return;
             }
-            req.db.modifyCollectionName(cid, userId, newTitle);
+            req.db.modifyCollectionName(collectionId, userId, newTitle);
             break;
           case 'character':
             break;
@@ -289,7 +318,7 @@ const USER_IMAGE_PATH = '/user_uploads/images';
   
   /* NOTE AREA */
     router.post('/updateText', checkAuth, function(req, res) {
-      const { cid, eid, type, field, newText } = req.body;
+      const { collectionId, entryId, type, field, newText } = req.body;
       const userId = req.session.user.id;
 
       try
@@ -297,12 +326,12 @@ const USER_IMAGE_PATH = '/user_uploads/images';
         switch(type)
         {
           case 'collection':
-            if(req.db.getCollection(cid, userId) === null)
+            if(req.db.getCollection(collectionId, userId) === null)
             {
               res.status(404).json({error: "Collection not found."});
               return;              
             }
-            req.db.modifyCollectionText(cid, userId, field, newText);
+            req.db.modifyCollectionText(collectionId, userId, field, newText);
             break;
           case 'character':
             break;
@@ -324,14 +353,46 @@ const USER_IMAGE_PATH = '/user_uploads/images';
     });
 
   /* IMAGE AREA */
-    router.post('/updateImage', checkAuth, function(req, res) {
-      const { cid, eid, type } = req.body;
+    /* upload.single is a built-in multer function. The argument needs to match the file
+       name in the request body. */
+    router.post('/updateImage', checkAuth, upload.single('image'), function(req, res) {
+      if(!req.file) {
+        return res.status(400).json({error: "No image file provided."});
+      }
+      
+      const { collectionId, entryId, entryType } = req.body;
       const userId = req.session.user.id;
 
       try
       {
-        const oldPath = req.db.getCollection(cid, userId).image_path;
-        const newPath = '';
+        const collection = req.db.getCollection(collectionId, userId);
+
+        if( collection === null)
+        {
+          res.status(404).json({error: "Collection not found."});
+          fs.unlinkSync(req.file.path);
+          return;              
+        }
+
+        let oldPath = '';
+        const newPath = `/${USER_IMAGE_PATH}/user_${userId}/${req.file.filename}`;
+
+        switch(entryType)
+        {
+          case 'collection':
+            oldPath = collection.image_path;
+            req.db.modifyCollectionImage(collectionId, userId, newPath);
+            break;
+          case 'character':
+            break;
+          case 'location':
+            break;
+          default:
+            const err = "Invalid request for /updateImage";
+            console.log(err);
+            fs.unlinkSync(req.file.path);
+            return res.status(400).json({error: err});
+        }
 
         /* Delete the old image if there is one. */
         if(oldPath && oldPath !== '')
@@ -344,36 +405,13 @@ const USER_IMAGE_PATH = '/user_uploads/images';
             fs.unlinkSync(absPath);
           }
         }
-
-
-
-
-
-        switch(type)
-        {
-          case 'collection':
-            if(req.db.getCollection(cid, userId) === null)
-            {
-              res.status(404).json({error: "Collection not found."});
-              return;              
-            }
-            req.db.modifyCollectionImage(cid, userId, newPath);
-            break;
-          case 'character':
-            break;
-          case 'location':
-            break;
-          default:
-            const err = "Invalid request for /updateText";
-            console.log(err);
-            return res.status(400).json({error: err});
-        }
         
-        res.status(200).json({ success: true });
+        res.status(200).json({ success: true, imagePath: newPath });
       }
       catch(e)
       {
         console.log(e);
+        if (req.file) {fs.unlinkSync(req.file.path);}
         res.status(500).json({error: e});
       }
     });

@@ -1,5 +1,6 @@
 <!-- Define the standard image display/upload section -->
-<div class="ImageArea" 
+<div class="ImageArea"
+    id="Image-Area"
     data-cid="<%= collectionId %>" 
     data-eid="<%= entryId %>" 
     data-type="<%= entryType %>" 
@@ -8,7 +9,15 @@
     <img 
         id="EntryImage" 
         src="<%= imagePath || '/images/PostalGames_placeholder.png' %>" 
-        onclick="uploadImage()" 
+        onclick="document.getElementById('file-input').click()" 
         alt="<%= entryType %> Image"
+        style="cursor: pointer"
+    >
+
+    <input type="file" 
+        id="file-input" 
+        style="display: none" 
+        accept="image/*"
+        onchange="uploadImage(event)"
     >
 </div>
