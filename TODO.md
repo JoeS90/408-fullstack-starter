@@ -12,6 +12,7 @@
 
     ### Partials
     - imageArea.ejs
+        - Fix image sizing
     - Associations
     - statBlock.ejs
     - Inventory
@@ -24,6 +25,8 @@
 - Encrypt DB
 - Move/copy to collection
 - Import/Export data (pdf vs zip? both?)
+- Delete image
+- Delete account
 - Share collection
 - Obfuscate collection
 - Offline mode?

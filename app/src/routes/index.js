@@ -181,9 +181,12 @@ const USER_IMAGE_PATH = 'user_uploads/images';
       {
         const images = req.db.getImagesByCollection(collectionId);
         images.forEach(image => {
-          const absPath = path.join(__dirname, '../public', image.image_path);
-          if(fs.existsSync(absPath)) {
-            fs.unlinkSync(absPath);
+          if(image.image_path !== null && image.image_path !== '')
+          {
+            const absPath = path.join(__dirname, '../public', image.image_path);
+            if(fs.existsSync(absPath)) {
+              fs.unlinkSync(absPath);
+            }
           }
         });
 
