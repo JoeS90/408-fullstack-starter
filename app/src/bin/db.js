@@ -13,7 +13,7 @@ const createUsersTable = `
     pwd_hash TEXT,
     created_at INTEGER,
     last_login INTEGER
-  )`
+  )`;
 
 /* Create the collections (worlds) table. */
 const createCollectionsTable = `
@@ -25,7 +25,7 @@ const createCollectionsTable = `
     description TEXT,
     notes TEXT,
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE 
-  )`
+  )`;
 
 /* Create the locations table. */
 const createLocationsTable = `
@@ -40,7 +40,7 @@ const createLocationsTable = `
     parent_location_id INTEGER,
     FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE,
     FOREIGN KEY (parent_location_id) REFERENCES locations(id) ON DELETE SET NULL
-  )`
+  )`;
 
 /* Create the characters table. */
 const createCharactersTable = `
@@ -54,7 +54,43 @@ const createCharactersTable = `
     backstory TEXT,
     notes TEXT,
     FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE
-  )`
+  )`;
+
+  const createCharacterAssocCascadeTrigger = `
+    CREATE TRIGGER IF NOT EXISTS delete_character_associations
+      AFTER DELETE ON characters
+      BEGIN
+        DELETE FROM associations
+        WHERE collection_id = OLD.collection_id
+          AND (
+              (entry_id = OLD.id AND entry_type = 'Character')
+            OR  
+              (assoc_id = OLD.id AND assoc_type = 'Character')
+          );
+      END;
+    `;
+
+/* Create the associations table */
+const createAssociationsTable = `
+  CREATE TABLE IF NOT EXISTS associations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    collection_id INTEGER NOT NULL,
+    entry_id INTEGER NOT NULL,
+    entry_type TEXT NOT NULL,
+    assoc_id INTEGER NOT NULL,
+    assoc_type TEXT NOT NULL,
+    relationship TEXT
+  )`;
+
+  const createAssocsIndexPrimary = `
+    CREATE INDEX IF NOT EXISTS idx_assoc_primary
+      ON associations (collection_id, entry_id, entry_type)
+    `;
+
+  const createAssocsIndexRelations = `
+    CREATE INDEX IF NOT EXISTS idx_assoc_relations
+      ON associations (collection_id, assoc_id, assoc_type)
+    `;
 
 /* Create the Database */
 function createDatabaseManager(dbPath) {
@@ -68,6 +104,14 @@ function createDatabaseManager(dbPath) {
   database.exec(createCollectionsTable);
   database.exec(createLocationsTable);
   database.exec(createCharactersTable);
+  database.exec(createAssociationsTable);
+
+  /* Build indexes */
+  database.exec(createAssocsIndexPrimary);
+  database.exec(createAssocsIndexRelations);
+
+  /* Build triggers */
+  database.exec(createCharacterAssocCascadeTrigger);
 
   function ensureConnected() {
     if (!database.open) {
@@ -119,7 +163,7 @@ function createDatabaseManager(dbPath) {
         }
       },
 
-      verifyUser: function(username, password)
+      verifyUser(username, password) /* Do NOT make this an arrow function or 'this' will not work */
       {
         const user = this.getUser(username);
 
@@ -274,7 +318,7 @@ function createDatabaseManager(dbPath) {
         }
       },
 
-      getEntriesByCollection(collectionId)
+      getEntriesByCollection: (collectionId) =>
       {
         try
         {
@@ -297,7 +341,7 @@ function createDatabaseManager(dbPath) {
         }
       },
 
-      getImagesByCollection(collectionId)
+      getImagesByCollection: (collectionId) =>
       {
         try
         {
@@ -324,6 +368,41 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      getCharactersByCollection: (collectionId) =>
+      {
+        try
+        {
+          const stmt = database.prepare(`
+            SELECT * FROM characters
+            WHERE collection_id = :cid
+          `);
+
+          return stmt.all({cid: collectionId});
+        }
+        catch(e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      getOrphanLocationsByCollection: (collectionId) =>
+      {
+        try
+        {
+          const stmt = database.prepare(`
+            SELECT * FROM locations
+            WHERE collection_id = :cid
+              AND parent_location_id = NULL
+          `);
+
+          return stmt.all({cid: collectionId});
+        }
+        catch(e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
       /* CHARACTERS */
       createCharacter: (name, collectionId) =>
       {
@@ -342,6 +421,7 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      /* GENERAL */
       nameAlreadyExists: (array, name) =>
       {
         for(var i = 0; i < array.length; i++)
@@ -352,6 +432,46 @@ function createDatabaseManager(dbPath) {
           }
         }
         return false;
+      },
+
+      getAssociationsByType(collectionId, entryId, entryType, assocType)
+      {
+        try
+        {
+          // TODO: This query does not take into account assymetric relationships (parent-child, employer/employee)
+          const getAssocs = database.prepare(`
+            SELECT assoc_id AS id, relationship FROM associations
+            WHERE collection_id = :cid
+              AND entry_id = :eid 
+              AND entry_type = :etype
+              AND assoc_type = :atype
+            UNION
+            SELECT entry_id AS id, relationship FROM associations
+            WHERE collection_id = :cid
+              AND assoc_id = :eid 
+              AND assoc_type = :etype
+              AND entry_type = :atype
+          `);
+
+          const assocIds = getAssocs.all({cid: collectionId, eid: entryId, etype: entryType, atype: assocType});
+          const table = assocType.toLowerCase() + 's';
+          
+          const getEntry = database.prepare(`
+            SELECT * FROM ${table}
+            WHERE id = :eid
+          `);
+          
+          const entries = assocIds.map(assoc => {
+            const entry = getEntry.get({eid: assoc.id})
+            return {...entry, relationship: assoc.relationship};
+          });
+
+          return entries;
+        }
+        catch(e)
+        {
+          throw e; // TODO: add specific handling
+        }
       },
 
     }

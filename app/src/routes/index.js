@@ -213,17 +213,23 @@ const USER_IMAGE_PATH = 'user_uploads/images';
       try
       {
         const data = req.db.getCollection(collectionId, userId);
+        
         if(!data)
         {
           return res.status(404).json({error: "Collection not found."});
         }
 
-        res.render('world', {world: data});
+        const rels = {
+          characters: req.db.getCharactersByCollection(collectionId),
+          locations: req.db.getOrphanLocationsByCollection(collectionId)
+        }
+
+        res.render('world', {world: data, relationships: rels});
       }
       catch(e)
       {
         console.log(e);
-        res.render('home', {error: "Failed to load collection."});
+        return res.status(500).json({error: e.message});
       }
     });
 

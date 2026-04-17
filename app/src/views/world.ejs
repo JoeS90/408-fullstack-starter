@@ -37,8 +37,22 @@
 
     <div class="WorldPage-Sidebar">
         <div class="WorldPage-Associations">
-            <textarea id="characters" name="characters" placeholder="Links to Characters" style="flex: 1;"></textarea>
-            <textarea id="locations" name="locations" placeholder="Links to Locations" style="flex: 1;"></textarea>
+            <%- include('partials/associations', {
+                    id: 'charAssocs', 
+                    collectionId: world.id,
+                    entryId: world.id,
+                    entryType: 'collection',
+                    assocType: 'Characters',
+                    areaList: relationships.characters
+            }) %>
+            <%- include('partials/associations', {
+                    id: 'locAssocs', 
+                    collectionId: world.id,
+                    entryId: world.id,
+                    entryType: 'collection',
+                    assocType: 'Locations',
+                    areaList: relationships.locations
+            }) %>
             <textarea id="lore" name="lore" placeholder="Links to Lore" style="flex: 1;"></textarea>
         </div>
         <div class="WorldPage-Manage">

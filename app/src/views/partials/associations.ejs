@@ -1,0 +1,31 @@
+<!-- Define the standard association display section -->
+<div class="AssocArea"
+    id="<% id %>"
+    data-cid="<%= collectionId %>"
+    data-eid="<%= entryId %>"
+    data-type="<%= entryType %>"
+>
+    <div class="AssocArea-Head">
+        <span class="AssocArea-Title"><%= assocType %></span>
+        <% if (entryType !== 'collection') { %>
+            <button class="EditToggle" type="button" onclick="alert('Not implemented')">Connect</button>
+        <% } %>
+        <button class="EditToggle" type="button" onclick="alert('Not Implemented')">New</button>
+    </div>
+    <ul class="AssocArea-List">
+        <% if (areaList && areaList.length > 0) { %>
+            <% areaList.forEach(entry => { %>
+                <li class="AssocArea-Entry">
+                    <a href="/<%= assocTitle.toLowerCase() %>/<%= entry.id %>">
+                        <%= entry.name %>
+                    </a>
+                    <% if (entry.relationship) { %>
+                        <%= entry.relationship %>
+                    <% } %>
+                </li>
+            <% }); %>
+        <% } else { %>
+            No entries found.
+        <% } %>
+    </ul>
+</div>
