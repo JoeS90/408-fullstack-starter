@@ -50,9 +50,11 @@ async function titleEditToggle(button)
 {
   const titleArea = button.closest('.TitleArea');
   const title = titleArea.querySelector('input');
-  const origTitle = titleArea.dataset.title;
-  const entryType = titleArea.dataset.type;
   const collectionId = titleArea.dataset.cid;
+  const entryId = titleArea.dataset.eid;
+  const entryType = titleArea.dataset.type;
+  const origTitle = titleArea.dataset.title;
+  
 
   if(title.hasAttribute('readonly'))
   {
@@ -82,7 +84,7 @@ async function titleEditToggle(button)
         const response = await fetch('/updateTitle', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({collectionId, entryType, newTitle})
+          body: JSON.stringify({collectionId, entryId, entryType, newTitle})
         });
 
         if(!response.ok)
@@ -193,3 +195,4 @@ async function uploadImage(event)
     alert(e.message);
   }
 }
+

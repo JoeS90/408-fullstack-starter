@@ -63,9 +63,9 @@ const createCharactersTable = `
         DELETE FROM associations
         WHERE collection_id = OLD.collection_id
           AND (
-              (entry_id = OLD.id AND entry_type = 'Character')
+              (entry_id = OLD.id AND entry_type = 'character')
             OR  
-              (assoc_id = OLD.id AND assoc_type = 'Character')
+              (assoc_id = OLD.id AND assoc_type = 'character')
           );
       END;
     `;
@@ -117,6 +117,42 @@ function createDatabaseManager(dbPath) {
     if (!database.open) {
       throw new Error('Database connection is not open');
     }
+  }
+
+  /* Security functions */
+  function validateTable(table)
+  {
+    const whitelist = {
+      'collection': 'collections',
+      'character': 'characters',
+      'location': 'locations',
+    };
+
+    if(!whitelist[table])
+    {
+      throw new Error(`Invalid table '${table}'.`)
+      return null;
+    }
+
+    return whitelist[table];
+  }
+
+  function validateField(table, field)
+  {
+    const vTable = validateTable(table);
+
+    const stmt = database.prepare(`PRAGMA table_info(${vTable})`);
+    const data = stmt.all();
+
+    const whitelist = data.map(col => col.name);
+
+    if(!whitelist.includes(field))
+    {
+      throw new Error(`Invalid field '${field}' for table '${table}'.`)
+      return null;
+    }
+
+    return field;
   }
 
   return {
@@ -403,6 +439,25 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      getNamesByCollectionAndType: (collectionId, entryType) =>
+      {
+        const vtable = validateTable(entryType);
+
+        try
+        {
+          const stmt = database.prepare(`
+            SELECT name FROM ${vtable}
+            WHERE collection_id = ?
+          `);
+
+          return stmt.all(collectionId);
+        }
+        catch(e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
       /* CHARACTERS */
       createCharacter: (name, collectionId) =>
       {
@@ -413,7 +468,7 @@ function createDatabaseManager(dbPath) {
             VALUES (?, ?, ?, ?)  
           `);
 
-          return stmt.run(name, userId, '', '');
+          return stmt.run(name, collectionId, '', '');
         }
         catch (e)
         {
@@ -421,6 +476,25 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      getCharacter: (collectionId, characterId) =>
+      {
+        try
+        {
+          const stmt = database.prepare(`
+            SELECT * from characters
+            WHERE collection_id = ?
+              AND id = ?
+          `);
+
+          const row = stmt.get(collectionId, characterId);
+          return row ? row : null;
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      }, 
+      
       /* GENERAL */
       nameAlreadyExists: (array, name) =>
       {
@@ -454,10 +528,10 @@ function createDatabaseManager(dbPath) {
           `);
 
           const assocIds = getAssocs.all({cid: collectionId, eid: entryId, etype: entryType, atype: assocType});
-          const table = assocType.toLowerCase() + 's';
-          
+          const vtable = validateTable(assocType);
+
           const getEntry = database.prepare(`
-            SELECT * FROM ${table}
+            SELECT * FROM ${vtable}
             WHERE id = :eid
           `);
           
@@ -474,6 +548,109 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      createAssociation: (collectionId, entryId, entryType, assocId, assocType, relationship) =>
+      {
+        if(entryType === 'collection' || assocType === 'collection')
+        {
+          throw new Error("Associations cannot exist between collections.")
+          return;
+        }
+
+        try
+        {
+          const stmt = database.prepare(`
+            INSERT INTO associations (collection_id, entry_id, entry_type, assoc_id, assoc_type, relationship)
+            VALUES (?, ?, ?, ?, ?, ?)
+          `);
+          
+          return stmt.run(collectionId, entryId, entryType, assocId, assocType, relationship);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      modifyEntryName: (collectionId, entryId, entryType, newName) =>
+      {
+        const vtable = validateTable(entryType);
+        try
+        {
+          const stmt = database.prepare(`
+            UPDATE ${vtable}
+            SET name = ?
+            WHERE id = ?
+              AND collection_id = ?
+          `);
+
+          return stmt.run(newName, entryId, collectionId);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      modifyEntryText: (collectionId, entryId, entryType, field, newText) =>
+      {
+        const vtable = validateTable(entryType);
+        const vfield = validateField(entryType, field);
+
+        try
+        {
+          const stmt = database.prepare(`
+            UPDATE ${vtable}
+            SET ${vfield} = ?
+            WHERE id = ?
+              AND collection_id = ?
+          `);
+
+          return stmt.run(newText, entryId, collectionId);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      getEntryImage: (collectionId, entryId, entryType) =>
+      {
+        const vtable = validateTable(entryType);
+        try
+        {
+          const stmt = database.prepare(`
+            SELECT image_path FROM ${vtable}
+            WHERE collection_id = ?
+              AND id = ?
+          `);
+
+          return stmt.get(collectionId, entryId);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      modifyEntryImage: (collectionId, entryId, entryType, newPath) =>
+      {
+        const vtable = validateTable(entryType);
+        try
+        {
+          const stmt = database.prepare(`
+            UPDATE ${vtable}
+            SET image_path = ?
+            WHERE id = ?
+              AND collection_id = ?
+          `);
+
+          return stmt.run(newPath, entryId, collectionId);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
     }
   };
 }

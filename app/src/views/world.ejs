@@ -3,6 +3,7 @@
         <div class="WorldPage-Title">
             <%- include('partials/titleArea', {
                 collectionId: world.id,
+                entryId: world.id,
                 entryType: 'collection',
                 entryName: world.name
             }) %>
@@ -38,20 +39,22 @@
     <div class="WorldPage-Sidebar">
         <div class="WorldPage-Associations">
             <%- include('partials/associations', {
-                    id: 'charAssocs', 
-                    collectionId: world.id,
-                    entryId: world.id,
-                    entryType: 'collection',
-                    assocType: 'Characters',
-                    areaList: relationships.characters
+                id: 'charAssocs', 
+                assocTitle: 'Characters',
+                collectionId: world.id,
+                entryId: world.id,
+                entryType: 'collection',
+                assocType: 'character',
+                areaList: relationships.characters
             }) %>
             <%- include('partials/associations', {
-                    id: 'locAssocs', 
-                    collectionId: world.id,
-                    entryId: world.id,
-                    entryType: 'collection',
-                    assocType: 'Locations',
-                    areaList: relationships.locations
+                id: 'locAssocs',
+                assocTitle: 'Locations',
+                collectionId: world.id,
+                entryId: world.id,
+                entryType: 'collection',
+                assocType: 'location',
+                areaList: relationships.locations
             }) %>
             <textarea id="lore" name="lore" placeholder="Links to Lore" style="flex: 1;"></textarea>
         </div>

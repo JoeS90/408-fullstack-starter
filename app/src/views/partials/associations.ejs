@@ -3,20 +3,27 @@
     id="<% id %>"
     data-cid="<%= collectionId %>"
     data-eid="<%= entryId %>"
-    data-type="<%= entryType %>"
+    data-etype="<%= entryType %>"
+    data-atype="<%= assocType %>"
 >
     <div class="AssocArea-Head">
-        <span class="AssocArea-Title"><%= assocType %></span>
+        <span class="AssocArea-Title"><%= assocTitle %></span>
         <% if (entryType !== 'collection') { %>
             <button class="EditToggle" type="button" onclick="alert('Not implemented')">Connect</button>
         <% } %>
-        <button class="EditToggle" type="button" onclick="alert('Not Implemented')">New</button>
+        <form action="/createEntry" method="POST" style="display: inline;">
+            <input type="hidden" name="collectionId" value="<%= collectionId %>">
+            <input type="hidden" name="entryId" value="<%= entryId %>">
+            <input type="hidden" name="entryType" value="<%= entryType %>">
+            <input type="hidden" name="assocType" value="<%= assocType %>">
+            <button class="EditToggle" type="submit">New</button>
+        </form>
     </div>
     <ul class="AssocArea-List">
         <% if (areaList && areaList.length > 0) { %>
             <% areaList.forEach(entry => { %>
                 <li class="AssocArea-Entry">
-                    <a href="/<%= assocTitle.toLowerCase() %>/<%= entry.id %>">
+                    <a href="/<%= assocType %>/<%= collectionId %>/<%= entry.id %>">
                         <%= entry.name %>
                     </a>
                     <% if (entry.relationship) { %>

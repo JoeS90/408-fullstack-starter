@@ -3,8 +3,12 @@
 ## Pages
 - world.ejs
     - implement associations
-- newEntry.ejs
 - character.ejs
+    - implement associations
+    - Control buttons
+        - Delete
+        - Export
+        - Move?
 - location.ejs
 - lore.ejs
 - faction.ejs
@@ -12,8 +16,10 @@
 
     ### Partials
     - imageArea.ejs
-        - Fix image sizing
+        - Fix image sizing?
     - Associations
+        - Connect
+        - Location-Location
     - statBlock.ejs
     - Inventory
 

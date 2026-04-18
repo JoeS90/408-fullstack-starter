@@ -141,6 +141,11 @@ const USER_IMAGE_PATH = 'user_uploads/images';
     res.render('home', {user: req.session.user.name , collections: collections});
   });
 
+  /* Get about page. */
+  router.get('/about', function(req, res) {
+    res.render('about');
+  })
+
 /*============================================================
     PAGE CREATION/RETRIEVAL/DELETION
   ============================================================*/
@@ -234,29 +239,52 @@ const USER_IMAGE_PATH = 'user_uploads/images';
     });
 
   /* ENTRY */
-    router.get('/createEntry', checkAuth, function(req, res) {
-      const {collectionId, entryType} = req.body;
-      res.render('newEntry', {collectionId: collectionId, entryType: entryType, error: null});
+    router.post('/createEntry', checkAuth, function(req, res) {
+      const {collectionId, entryId, entryType, assocType} = req.body;
+      res.render('newEntry', {collectionId: collectionId, entryId: entryId, entryType: entryType, assocType: assocType, error: null});
     });
 
     router.post('/addEntry', checkAuth, function(req, res) {
-      const{collectionId, entryType, name} = req.body;
+      const{collectionId, entryId, entryType, assocType, name} = req.body;
+      const relationship = req.body.relationship || null;
       const userId = req.session.user.id;
 
       try
       {
-        switch(entryType)
+        const data = req.db.getCollection(collectionId, userId);
+
+        if(!data)
+        {
+          return res.status(404).send("Collection not found.");
+        }
+
+        switch(assocType)
         {
           case 'character':
-            const result = req.db.createCharacter(name, userId, collectionId);
-            res.redirect(`/character/${result.lastInsertRowid}`);
+            const characters = req.db.getCharactersByCollection(collectionId);
+            if(req.db.nameAlreadyExists(characters, name))
+            {
+              throw new Error("A character with that name already exists in this collection.");
+              return;
+            }
+            const resultCreate = req.db.createCharacter(name, collectionId);
+
+            if(entryType !== 'collection')
+            {
+              const resultAssociate = req.db.createAssociation(collectionId, entryId, entryType, resultCreate.lastInsertRowid, assocType, relationship);
+            }
+            res.redirect(`/character/${collectionId}/${resultCreate.lastInsertRowid}`);
             break;
+          default:
+            const err = "Invalid request for /addEntry";
+            console.log(err);
+            return res.status(400).json({error: err});
         }
       }
       catch(e)
       {
         console.log(e);
-        res.render('newEntry', {collectionId: collectionId, entryType: entryType, error: "A " + entryType + " with that name already exists."});
+        res.render('newEntry', {collectionId: collectionId, entryId: entryId, entryType: entryType, assocType: assocType, error: e});
       }
     });
 
@@ -284,36 +312,71 @@ const USER_IMAGE_PATH = 'user_uploads/images';
       }
     });
 
+  /* CHARACTER */
+    router.get('/character/:collectionId/:id', checkAuth, function(req, res) {
+      const collectionId = req.params.collectionId;
+      const characterId = req.params.id;
+      const userId = req.session.user.id;
+      try
+      {
+        const data = req.db.getCollection(collectionId, userId);
+        
+        if(!data)
+        {
+          return res.status(404).json({error: "Collection not found."});
+        }
+
+        const character = req.db.getCharacter(collectionId, characterId);
+
+        const rels = {
+          characters: req.db.getAssociationsByType(collectionId, characterId, 'character', 'character'),
+          locations: req.db.getAssociationsByType(collectionId, characterId, 'character', 'location')
+        }
+
+        res.render('character', {character: character, relationships: rels});
+      }
+      catch(e)
+      {
+        console.log(e);
+        return res.status(500).json({error: e.message});
+      }
+    });
 
 /*============================================================
     SECTION UPDATES
   ============================================================*/
   /* TITLE */
     router.post('/updateTitle', checkAuth, function(req, res) {
-      const { collectionId, entryType, newTitle } = req.body;
+      const { collectionId, entryId, entryType, newTitle } = req.body;
       const userId = req.session.user.id;
 
       try
       {
-        switch(entryType)
+        if(req.db.getCollection(collectionId, userId) === null)
         {
-          case 'collection':
-            const collections = req.db.getCollectionsByUser(userId);
-            if(req.db.nameAlreadyExists(collections, newTitle))
-            {
-              res.status(409).json({error: "That name is already in use."})
-              return;
-            }
-            req.db.modifyCollectionName(collectionId, userId, newTitle);
-            break;
-          case 'character':
-            break;
-          case 'location':
-            break;
-          default:
-            const err = "Invalid request for /updateTitle";
-            console.log(err);
-            return res.status(400).json({error: err});
+          res.status(404).json({error: "Collection not found."});
+          return;              
+        }
+
+        if(entryType === 'collection')
+        {
+          const collections = req.db.getCollectionsByUser(userId);
+          if(req.db.nameAlreadyExists(collections, newTitle))
+          {
+            res.status(409).json({error: "That name is already in use."})
+            return;
+          }
+          req.db.modifyCollectionName(collectionId, userId, newTitle);
+        }
+        else
+        {
+          const names = req.db.getNamesByCollectionAndType(collectionId, entryType);
+          if(req.db.nameAlreadyExists(names, newTitle))
+          {
+            res.status(409).json({error: "That name is already in use."})
+            return;
+          }
+          req.db.modifyEntryName(collectionId, entryId, entryType, newTitle);
         }
 
         res.status(200).json({ success: true });
@@ -332,24 +395,31 @@ const USER_IMAGE_PATH = 'user_uploads/images';
 
       try
       {
-        switch(entryType)
+        if(req.db.getCollection(collectionId, userId) === null)
         {
-          case 'collection':
-            if(req.db.getCollection(collectionId, userId) === null)
-            {
-              res.status(404).json({error: "Collection not found."});
-              return;              
-            }
-            req.db.modifyCollectionText(collectionId, userId, field, newText);
-            break;
-          case 'character':
-            break;
-          case 'location':
-            break;
-          default:
-            const err = "Invalid request for /updateText";
-            console.log(err);
-            return res.status(400).json({error: err});
+          res.status(404).json({error: "Collection not found."});
+          return;              
+        }
+
+        if(entryType === 'collection')
+        {
+          const collections = req.db.getCollectionsByUser(userId);
+          if(req.db.nameAlreadyExists(collections, newText))
+          {
+            res.status(409).json({error: "That name is already in use."})
+            return;
+          }
+          req.db.modifyCollectionText(collectionId, userId, field, newText);
+        }
+        else
+        {
+          const names = req.db.getNamesByCollectionAndType(collectionId, entryType);
+          if(req.db.nameAlreadyExists(names, newText))
+          {
+            res.status(409).json({error: "That name is already in use."})
+            return;
+          }
+          req.db.modifyEntryText(collectionId, entryId, entryType, field, newText);
         }
         
         res.status(200).json({ success: true });
@@ -376,7 +446,7 @@ const USER_IMAGE_PATH = 'user_uploads/images';
       {
         const collection = req.db.getCollection(collectionId, userId);
 
-        if( collection === null)
+        if(collection === null)
         {
           res.status(404).json({error: "Collection not found."});
           fs.unlinkSync(req.file.path);
@@ -386,21 +456,15 @@ const USER_IMAGE_PATH = 'user_uploads/images';
         let oldPath = '';
         const newPath = `/${USER_IMAGE_PATH}/user_${userId}/${req.file.filename}`;
 
-        switch(entryType)
+        if(entryType === 'collection')
         {
-          case 'collection':
-            oldPath = collection.image_path;
-            req.db.modifyCollectionImage(collectionId, userId, newPath);
-            break;
-          case 'character':
-            break;
-          case 'location':
-            break;
-          default:
-            const err = "Invalid request for /updateImage";
-            console.log(err);
-            fs.unlinkSync(req.file.path);
-            return res.status(400).json({error: err});
+          oldPath = collection.image_path;
+          req.db.modifyCollectionImage(collectionId, userId, newPath);
+        }
+        else
+        {
+          oldPath = req.db.getEntryImage(collectionId, entryId, entryType).image_path;
+          req.db.modifyEntryImage(collectionId, entryId, entryType, newPath);
         }
 
         /* Delete the old image if there is one. */
@@ -424,25 +488,5 @@ const USER_IMAGE_PATH = 'user_uploads/images';
         res.status(500).json({error: e});
       }
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Get character page */
-router.get('/character', checkAuth, function(req, res) {
-  res.render('character', {characterName: "Sir Exel Pixelart"});
-});
 
 module.exports = router;

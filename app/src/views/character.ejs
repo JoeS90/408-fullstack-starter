@@ -1,29 +1,82 @@
 <div class="CharacterPage">
-    <div class="Info">
-        <div class="Overview">
-            <img src="/images/Knight.png" alt="Image">
-            <div class="Text">
-                <header>
-                    <h2><%= characterName %></h2>
+    <div class="CharacterPage-Main">
+        <div class="CharacterPage-Overview">
+            <%- include('partials/imageArea', {
+                collectionId: character.collection_id,
+                entryId: character.id,
+                entryType: 'character',
+                imagePath: character.image_path
+            }) %>
+            <div class="CharacterPage-Info">
+                <div class="CharacterPage-Title">
+                    <%- include('partials/titleArea', {
+                    collectionId: character.collection_id,
+                    entryId: character.id,
+                    entryType: 'character',
+                    entryName: character.name
+                    }) %>
                     <h3>Stat Block: <%= "TODO" %></h3>
-                </header>
-                <%- include('partials/noteArea', {sectionTitle: 'Physical Description', id: 'description', value: 'Strong, fast, fresh from the fight' }) %>
-                <%- include('partials/noteArea', {sectionTitle: 'Behavior', id: 'behavior', value: 'Kills his enemies, sees them driven before him. Enjoys the lamentations of their women.' }) %>
+                </div>
+                <div class="CharacterPage-Description">
+                    <%- include('partials/noteArea', {
+                        sectionTitle: 'Physical Description', 
+                        id: 'description', 
+                        value: character.description,
+                        collectionId: character.collection_id,
+                        entryId: character.id,
+                        entryType: 'character'
+                    }) %>
+                    <%- include('partials/noteArea', {
+                        sectionTitle: 'Behavior', 
+                        id: 'behavior', 
+                        value: character.behavior,
+                        collectionId: character.collection_id,
+                        entryId: character.id,
+                        entryType: 'character'
+                    }) %>
+                </div>
             </div>
         </div>
-        <div class="History">
-            <%- include('partials/noteArea', {sectionTitle: 'Backstory', id: 'backstory', value: 'Born and raised in West Philadelphia. Spent most of his days on the playground.' }) %>
-            <%- include('partials/noteArea', {sectionTitle: 'Notes', id: 'notes', value: 'Bottle fame... brew glory... put a stopper in death...' }) %>
-            <span style="font-size: 1.2rem; font-weight: bold; font-family: 'Papyrus', 'Garamond', sans-serif; flex: 0 0 auto;">Affiliations</span>
-            <div class="Links">
-                <textarea id="characters" name="characters" placeholder="Links to Characters" style="flex: 1;"></textarea>
-                <textarea id="locations" name="locations" placeholder="Links to Locations" style="flex: 1;"></textarea>
-                <textarea id="lore" name="lore" placeholder="Links to Lore" style="flex: 1;"></textarea>   
-            </div>
+        <div class="CharacterPage-History">
+            <%- include('partials/noteArea', {
+                sectionTitle: 'Backstory', 
+                id: 'backstory', 
+                value: character.backstory,
+                collectionId: character.collection_id,
+                entryId: character.id,
+                entryType: 'character'
+            }) %>
+            <%- include('partials/noteArea', {
+                sectionTitle: 'Notes', 
+                id: 'notes', 
+                value: character.notes,
+                collectionId: character.collection_id,
+                entryId: character.id,
+                entryType: 'character'
+            }) %>
         </div>
     </div>
 
-    <div class="StatBlock">
-        
+    <div class="CharacterPage-Sidebar">
+        <span style="font-size: 1.2rem; font-weight: bold; font-family: 'Papyrus', 'Garamond', sans-serif; flex: 0 0 auto;">Affiliations</span>
+        <%- include('partials/associations', {
+            id: 'charAssocs', 
+            assocTitle: 'Characters',
+            collectionId: character.collection_id,
+            entryId: character.id,
+            entryType: 'character',
+            assocType: 'character',
+            areaList: relationships.characters
+        }) %>
+        <%- include('partials/associations', {
+            id: 'locAssocs',
+            assocTitle: 'Locations',
+            collectionId: character.collection_id,
+            entryId: character.id,
+            entryType: 'character',
+            assocType: 'location',
+            areaList: relationships.locations
+        }) %>
+        <textarea id="lore" name="lore" placeholder="Links to Lore" style="flex: 1;"></textarea>
     </div>
 </div>
