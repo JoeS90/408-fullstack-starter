@@ -9,7 +9,13 @@
     <div class="AssocArea-Head">
         <span class="AssocArea-Title"><%= assocTitle %></span>
         <% if (entryType !== 'collection') { %>
-            <button class="EditToggle" type="button" onclick="alert('Not implemented')">Connect</button>
+            <form action="/createAssociation" method="POST" style="display: inline;">
+                <input type="hidden" name="collectionId" value="<%= collectionId %>">
+                <input type="hidden" name="entryId" value="<%= entryId %>">
+                <input type="hidden" name="entryType" value="<%= entryType %>">
+                <input type="hidden" name="assocType" value="<%= assocType %>">
+                <button class="EditToggle" type="submit">Connect</button>
+            </form>
         <% } %>
         <form action="/createEntry" method="POST" style="display: inline;">
             <input type="hidden" name="collectionId" value="<%= collectionId %>">
@@ -21,13 +27,18 @@
     </div>
     <ul class="AssocArea-List">
         <% if (areaList && areaList.length > 0) { %>
-            <% areaList.forEach(entry => { %>
+            <% areaList.forEach(rel => { %>
                 <li class="AssocArea-Entry">
-                    <a href="/<%= assocType %>/<%= collectionId %>/<%= entry.id %>">
-                        <%= entry.name %>
-                    </a>
-                    <% if (entry.relationship) { %>
-                        <%= entry.relationship %>
+                    <div>
+                        <a href="/<%= assocType %>/<%= collectionId %>/<%= rel.id %>">
+                            <%= rel.name %>
+                        </a>
+                        <% if (rel.relationship) { %>
+                            <%= rel.relationship %>
+                        <% } %>
+                    </div>
+                    <% if (entryType !== 'collection') { %>
+                        <button class="AssocArea-DeleteButton" type="button" onclick="removeAssociation(this, '<%= rel.id %>', '<%= rel.relationship %>')">X</button>
                     <% } %>
                 </li>
             <% }); %>

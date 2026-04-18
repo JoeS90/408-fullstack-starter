@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 
 /* Create the users table. Tracks accounts. */
 /* TODO: Implement UUID and encrypted storage of emails */
+/* NOTE: All Entry tables need explicit 'id', 'name', and 'image_path' fields. */
 const createUsersTable = `
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -122,6 +123,7 @@ function createDatabaseManager(dbPath) {
   /* Security functions */
   function validateTable(table)
   {
+    // TODO: Keep this up to date. 'Entry' tables ONLY!
     const whitelist = {
       'collection': 'collections',
       'character': 'characters',
@@ -377,6 +379,25 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      getEntriesByCollectionByType: (collectionId, entryType) =>
+      {
+        const vtable = validateTable(entryType);
+
+        try
+        {
+          const stmt = database.prepare(`
+            SELECT id, name, image_path FROM ${vtable}
+            WHERE collection_id = ?
+          `);
+
+          return stmt.all(collectionId);
+        }
+        catch(e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
       getImagesByCollection: (collectionId) =>
       {
         try
@@ -493,77 +514,40 @@ function createDatabaseManager(dbPath) {
         {
           throw e; // TODO: add specific handling
         }
-      }, 
-      
-      /* GENERAL */
-      nameAlreadyExists: (array, name) =>
-      {
-        for(var i = 0; i < array.length; i++)
-        {
-          if(array[i].name.toLowerCase() === name.toLowerCase())
-          {
-            return true;
-          }
-        }
-        return false;
       },
 
-      getAssociationsByType(collectionId, entryId, entryType, assocType)
+      /* GENERIC ENTRY */
+      getEntry: (collectionId, entryId, entryType) =>
       {
+        const vtable = validateTable(entryType);
         try
         {
-          // TODO: This query does not take into account assymetric relationships (parent-child, employer/employee)
-          const getAssocs = database.prepare(`
-            SELECT assoc_id AS id, relationship FROM associations
-            WHERE collection_id = :cid
-              AND entry_id = :eid 
-              AND entry_type = :etype
-              AND assoc_type = :atype
-            UNION
-            SELECT entry_id AS id, relationship FROM associations
-            WHERE collection_id = :cid
-              AND assoc_id = :eid 
-              AND assoc_type = :etype
-              AND entry_type = :atype
-          `);
-
-          const assocIds = getAssocs.all({cid: collectionId, eid: entryId, etype: entryType, atype: assocType});
-          const vtable = validateTable(assocType);
-
-          const getEntry = database.prepare(`
+          const stmt = database.prepare(`
             SELECT * FROM ${vtable}
-            WHERE id = :eid
+            WHERE collection_id = ?
+              AND id = ?
           `);
-          
-          const entries = assocIds.map(assoc => {
-            const entry = getEntry.get({eid: assoc.id})
-            return {...entry, relationship: assoc.relationship};
-          });
 
-          return entries;
+          return stmt.get(collectionId, entryId);
         }
-        catch(e)
+        catch (e)
         {
           throw e; // TODO: add specific handling
         }
       },
 
-      createAssociation: (collectionId, entryId, entryType, assocId, assocType, relationship) =>
+      deleteEntry: (collectionId, entryId, entryType) =>
       {
-        if(entryType === 'collection' || assocType === 'collection')
-        {
-          throw new Error("Associations cannot exist between collections.")
-          return;
-        }
-
+        const vtable = validateTable(entryType);
         try
         {
           const stmt = database.prepare(`
-            INSERT INTO associations (collection_id, entry_id, entry_type, assoc_id, assoc_type, relationship)
-            VALUES (?, ?, ?, ?, ?, ?)
+            DELETE FROM ${vtable}
+            WHERE collection_id = ?
+              AND id = ?
           `);
-          
-          return stmt.run(collectionId, entryId, entryType, assocId, assocType, relationship);
+
+          return stmt.run(collectionId, entryId);
         }
         catch (e)
         {
@@ -651,6 +635,105 @@ function createDatabaseManager(dbPath) {
           throw e; // TODO: add specific handling
         }
       },
+
+      removeAssociation: (collectionId, entryId, entryType, assocId, assocType, relationship) =>
+      {
+        try
+        {
+          const stmt = database.prepare (`
+            DELETE FROM associations
+            WHERE collection_id = ?
+              AND entry_id = ?
+              AND entry_type = ?
+              AND assoc_id = ?
+              AND assoc_type = ?
+              AND relationship = ?
+          `);
+
+          return stmt.run(collectionId, entryId, entryType, assocId, assocType, relationship);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+      
+      /* GENERAL */
+      nameAlreadyExists: (array, name) =>
+      {
+        for(var i = 0; i < array.length; i++)
+        {
+          if(array[i].name.toLowerCase() === name.toLowerCase())
+          {
+            return true;
+          }
+        }
+        return false;
+      },
+
+      getAssociationsByType(collectionId, entryId, entryType, assocType)
+      {
+        try
+        {
+          // TODO: This query does not take into account assymetric relationships (parent-child, employer/employee)
+          const getAssocs = database.prepare(`
+            SELECT assoc_id AS id, relationship FROM associations
+            WHERE collection_id = :cid
+              AND entry_id = :eid 
+              AND entry_type = :etype
+              AND assoc_type = :atype
+            UNION
+            SELECT entry_id AS id, relationship FROM associations
+            WHERE collection_id = :cid
+              AND assoc_id = :eid 
+              AND assoc_type = :etype
+              AND entry_type = :atype
+          `);
+
+          const assocIds = getAssocs.all({cid: collectionId, eid: entryId, etype: entryType, atype: assocType});
+          const vtable = validateTable(assocType);
+
+          const getEntry = database.prepare(`
+            SELECT * FROM ${vtable}
+            WHERE id = :eid
+          `);
+          
+          const entries = assocIds.map(assoc => {
+            const entry = getEntry.get({eid: assoc.id})
+            return {...entry, relationship: assoc.relationship};
+          });
+
+          return entries;
+        }
+        catch(e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      createAssociation: (collectionId, entryId, entryType, assocId, assocType, relationship) =>
+      {
+        if(entryType === 'collection' || assocType === 'collection')
+        {
+          throw new Error("Associations cannot exist between collections.")
+          return;
+        }
+
+        try
+        {
+          const stmt = database.prepare(`
+            INSERT INTO associations (collection_id, entry_id, entry_type, assoc_id, assoc_type, relationship)
+            VALUES (?, ?, ?, ?, ?, ?)
+          `);
+          
+          return stmt.run(collectionId, entryId, entryType, assocId, assocType, relationship);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
     }
   };
 }

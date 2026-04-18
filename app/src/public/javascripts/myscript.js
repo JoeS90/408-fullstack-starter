@@ -196,3 +196,73 @@ async function uploadImage(event)
   }
 }
 
+async function deleteEntry(collectionId, entryId, entryName, entryType)
+{
+  try
+  {
+    const confirmed = confirm(`${entryName} will be permanently deleted from this collection. Are you sure?`);
+
+    if(confirmed)
+    {
+      const response = await fetch(`/deleteEntry/${collectionId}/${entryId}/${entryType}`, {
+        method: 'DELETE'
+      });
+
+      if(response.ok)
+      {
+        alert(`${entryName} has been lost to the void.`);
+        window.location.href = `/collection/${collectionId}`;
+        return;
+      }
+      else
+      {
+        const data = await response.json();
+        alert(`Failed to delete ${entryName}:` + data.error);
+      }
+    }
+  }
+  catch(e)
+  {
+    alert(`Failed to delete ${entryName}:` + e.message);
+  }
+}
+
+async function removeAssociation(button, assocId, relationship)
+{
+  const area = button.closest('.AssocArea');
+  const collectionId = area.dataset.cid;
+  const entryId = area.dataset.eid;
+  const entryType = area.dataset.etype;
+  const assocType = area.dataset.atype;
+
+  try
+  {
+    const response = await fetch(`/deleteAssociation/${collectionId}/${entryId}/${entryType}/${assocId}/${assocType}/${relationship}`, {
+      method: 'DELETE'
+    });
+
+    if(!response.ok)
+    {
+      const data = await response.json();
+      throw new Error('Delete failed: ' + data.error);
+    }
+    else
+    {
+      const listItem = button.closest('.AssocArea-Entry');
+      if(listItem) 
+      { 
+        listItem.remove(); 
+      }
+      
+      const list = area.querySelector('.AssocArea-List');
+      if( list && list.children.length === 0)
+      {
+        list.innerHTML = 'No entries found.';
+      }
+    }
+  }
+  catch(e)
+  {
+    alert(e.message);
+  }
+}

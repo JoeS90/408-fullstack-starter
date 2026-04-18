@@ -5,21 +5,15 @@
     - implement associations
 - character.ejs
     - implement associations
-    - Control buttons
-        - Delete
-        - Export
-        - Move?
 - location.ejs
 - lore.ejs
 - faction.ejs
 - about.ejs
 
     ### Partials
-    - imageArea.ejs
-        - Fix image sizing?
     - Associations
-        - Connect
         - Location-Location
+        - Character-Character reverse association
     - statBlock.ejs
     - Inventory
 
@@ -29,7 +23,7 @@
 
 ## Additional Features
 - Encrypt DB
-- Move/copy to collection
+- Move/copy to collection (planeshift)
 - Import/Export data (pdf vs zip? both?)
 - Delete image
 - Delete account

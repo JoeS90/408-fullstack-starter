@@ -1,0 +1,25 @@
+<div class="SplashPage">
+    <h1>Add <%= assocType %> relationship for <%= entryName %></h1>
+    <% if (locals.error) { %>
+        <p class="ErrorMessage"><%= error %></p>
+    <% } %>
+    <form action="/addAssociation" method="POST">
+        <input type="hidden" name="collectionId" value="<%= collectionId %>">
+        <input type="hidden" name="entryId" value="<%= entryId %>">
+        <input type="hidden" name="entryType" value="<%= entryType %>">
+        <input type="hidden" name="assocType" value="<%= assocType %>">
+
+        <!-- TODO: Add loop for multiple entries -->
+        <!-- TODO: Add separate handling for location-location relationships -->
+        <select class="DropDown" id="assocId" name="assocId">
+            <% list.forEach(item => { %>
+                <% if (Number(item.id) !== Number(entryId)) { %>
+                    <option value="<%= item.id %>"><%= item.name %></option> 
+                <% } %>
+            <% }); %>
+        </select>
+        <input type="text" name="relationship" placeholder="Relationship">
+        <button class="MenuButton" type="submit">Add</button>
+        <button class="MenuButton" type="submit" formaction="/<%= entryType %>/<%= collectionId %>/<%= entryId %>" formnovalidate>Back</button>
+    </form>
+</div>

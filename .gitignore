@@ -121,3 +121,6 @@ playwright-report/
 instance_id.txt
 ec2-ssh.sh
 docker-compose.yml
+
+# Ignore user data
+user_uploads/

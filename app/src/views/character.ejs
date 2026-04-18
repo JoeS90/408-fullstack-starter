@@ -57,26 +57,37 @@
         </div>
     </div>
 
-    <div class="CharacterPage-Sidebar">
-        <span style="font-size: 1.2rem; font-weight: bold; font-family: 'Papyrus', 'Garamond', sans-serif; flex: 0 0 auto;">Affiliations</span>
-        <%- include('partials/associations', {
-            id: 'charAssocs', 
-            assocTitle: 'Characters',
-            collectionId: character.collection_id,
-            entryId: character.id,
-            entryType: 'character',
-            assocType: 'character',
-            areaList: relationships.characters
-        }) %>
-        <%- include('partials/associations', {
-            id: 'locAssocs',
-            assocTitle: 'Locations',
-            collectionId: character.collection_id,
-            entryId: character.id,
-            entryType: 'character',
-            assocType: 'location',
-            areaList: relationships.locations
-        }) %>
-        <textarea id="lore" name="lore" placeholder="Links to Lore" style="flex: 1;"></textarea>
+    <div class="EntryPage-Sidebar">
+        <div class="EntryPage-Sidebar-Head">
+            <div class="EntryPage-Sidebar-Title">Affiliations</div>
+            <button class="ControlButton" title="Back to World" onclick="location.href='/collection/<%= character.collection_id %>'">Back to World</button>
+        </div>
+        <div class="EntryPage-Associations">
+            
+            <%- include('partials/associations', {
+                id: 'charAssocs', 
+                assocTitle: 'Characters',
+                collectionId: character.collection_id,
+                entryId: character.id,
+                entryType: 'character',
+                assocType: 'character',
+                areaList: relationships.characters
+            }) %>
+            <%- include('partials/associations', {
+                id: 'locAssocs',
+                assocTitle: 'Locations',
+                collectionId: character.collection_id,
+                entryId: character.id,
+                entryType: 'character',
+                assocType: 'location',
+                areaList: relationships.locations
+            }) %>
+            <textarea id="lore" name="lore" placeholder="Links to Lore" style="flex: 1;"></textarea>
+        </div>
+        <div class="EntryPage-Manage">
+            <button class="ControlButton disabled" disabled title="Not Implemented">Planeshift</button>
+            <button class="ControlButton" type="button" onclick="deleteEntry('<%= character.collection_id %>','<%= character.id %>', '<%= character.name %>', 'character')">Delete</button>
+            <button class="ControlButton disabled" disabled title="Not Implemented">Export</button>
+        </div>
     </div>
 </div>

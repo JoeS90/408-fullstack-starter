@@ -288,6 +288,43 @@ const USER_IMAGE_PATH = 'user_uploads/images';
       }
     });
 
+    router.delete('/deleteEntry/:collectionId/:entryId/:entryType', checkAuth, function(req, res) {
+      const collectionId = req.params.collectionId;
+      const entryType = req.params.entryType;
+      const entryId = req.params.entryId;
+      const userId = req.session.user.id;
+
+      try
+      {
+        const data = req.db.getCollection(collectionId, userId);
+        if(!data)
+        {
+          return res.status(404).json({error: "Collection not found."});
+        }
+
+        const entry = req.db.getEntry(collectionId, entryId, entryType);
+        
+        const imagePath = entry.image_path;
+        
+        if(imagePath !== null && imagePath !== '')
+        {
+          const absPath = path.join(__dirname, '../public', imagePath);
+          if(fs.existsSync(absPath)) {
+            fs.unlinkSync(absPath);
+          }
+        }
+
+        const result = req.db.deleteEntry(collectionId, entryId, entryType);
+
+        res.status(200).json({success: true});
+      }
+      catch(e)
+      {
+        console.log(e);
+        res.status(500).json({error: e.message});
+      }
+    });
+
     router.get('/allEntries/:id', checkAuth, function(req, res) {
       const collectionId = req.params.id;
       const userId = req.session.user.id;
@@ -339,6 +376,61 @@ const USER_IMAGE_PATH = 'user_uploads/images';
       {
         console.log(e);
         return res.status(500).json({error: e.message});
+      }
+    });
+
+    router.post('/character/:collectionId/:id', checkAuth, function(req, res){
+      const {collectionId, id} = req.params;
+      res.redirect(`/character/${collectionId}/${id}`);
+    });
+
+  /* ASSOCIATION PAGE */
+    router.post('/createAssociation', checkAuth, function(req, res) {
+      const {collectionId, entryId, entryType, assocType} = req.body;
+
+      try
+      {
+        const entryName = req.db.getEntry(collectionId, entryId, entryType).name;
+        const list = req.db.getEntriesByCollectionByType(collectionId, assocType);
+
+        res.render('connections', {
+          collectionId, 
+          entryId, 
+          entryName, 
+          entryType, 
+          assocType,
+          list,
+          error: null
+        });
+      }
+      catch(e)
+      {
+        console.log(e);
+        res.status(500).json({error: e});
+      }
+    });
+
+    router.post('/addAssociation', checkAuth, function(req, res) {
+      const {collectionId, entryId, entryType, assocType, assocId, relationship} = req.body;
+      const userId = req.session.user.id;
+
+      try
+      {
+        if(req.db.getCollection(collectionId, userId) === null)
+        {
+          res.status(404).json({error: "Collection not found."});
+          return;              
+        }
+
+        // TODO: add loop for multiple entries
+        req.db.createAssociation(collectionId, entryId, entryType, assocId, assocType, relationship);
+
+        res.redirect(`/${entryType}/${collectionId}/${entryId}`);
+      }
+      catch(e)
+      {
+        console.log(e);
+        res.status(500).json({error: e});
       }
     });
 
@@ -486,6 +578,35 @@ const USER_IMAGE_PATH = 'user_uploads/images';
         console.log(e);
         if (req.file) {fs.unlinkSync(req.file.path);}
         res.status(500).json({error: e});
+      }
+    });
+
+  /* ASSOCIATION AREA */
+    router.delete('/deleteAssociation/:collectionId/:entryId/:entryType/:assocId/:assocType/:relationship', checkAuth, function(req, res) {
+      const collectionId = req.params.collectionId;
+      const entryId = req.params.entryId;
+      const entryType = req.params.entryType;
+      const assocId = req.params.assocId;
+      const assocType = req.params.assocType;
+      const relationship = req.params.relationship;
+      const userId = req.session.user.id;
+
+      try
+      {
+        const data = req.db.getCollection(collectionId, userId);
+        if(!data)
+        {
+          return res.status(404).json({error: "Collection not found."});
+        }        
+
+        const result = req.db.removeAssociation(collectionId, entryId, entryType, assocId, assocType, relationship);
+
+        res.status(200).json({success: true});
+      }
+      catch(e)
+      {
+        console.log(e);
+        res.status(500).json({error: e.message});
       }
     });
 

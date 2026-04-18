@@ -228,6 +228,19 @@
 
             margin-left: 10px;
         }
+
+        .AssocArea-Entry {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .AssocArea-DeleteButton {
+            padding: 0px 2px;
+
+            background-color: var(--emphasis-color);
+        }
     
     /* SHARED ELEMENTS */
 
@@ -336,7 +349,6 @@
             flex-direction: row;
             align-items: center;
             justify-content: space-around;
-            margin: 10px;
         }
 
 /* CHARACTER DISPLAY */
@@ -363,7 +375,7 @@
     }
 
         .CharacterPage-Overview {
-            flex: 2;
+            flex: 1;
             display: flex;
             flex-direction: row;
             gap: 10px;
@@ -397,22 +409,36 @@
                 }
         
         .CharacterPage-History {
-            flex: 3;
+            flex: 1;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             gap: 10px;
         }
 
-    .CharacterPage-Sidebar {
+    .EntryPage-Sidebar {
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 10px;
         
         min-height: 0;
     }
 
-        .CharacterPage-Associations {
+        .EntryPage-Sidebar-Head{
+            display: flex;
+            flex-direction: row;
+            flex: 0 0 auto;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0;
+        }
+        
+            .EntryPage-Sidebar-Title {
+                font-size: 1.2rem;
+                font-weight: bold;
+            }
+
+        .EntryPage-Associations {
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -421,13 +447,12 @@
             min-height: 0;
         }
 
-        .CharacterPage-Manage {
+        .EntryPage-Manage {
             flex: 0 0 auto;
             display: flex;
             flex-direction: row;
             align-items: center;
             justify-content: space-around;
-            margin: 10px;
         }
 
 /* Format for the Location page */
@@ -457,6 +482,21 @@
 }
 
 .MenuButton.disabled {
+    background-color: rgb(128, 128, 128);
+    color: rgb(64, 64, 64)
+}
+
+.ControlButton {
+    width: fit-content;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-align: center;
+    background-color: var(--emphasis-color);
+
+    font-size: 1.2rem;
+}
+
+.ControlButton.disabled {
     background-color: rgb(128, 128, 128);
     color: rgb(64, 64, 64)
 }
