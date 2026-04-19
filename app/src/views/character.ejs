@@ -73,7 +73,8 @@
                 assocType: 'character',
                 areaList: relationships.characters
             }) %>
-            <%- include('partials/associations', {
+            <%- /*
+            include('partials/associations', {
                 id: 'locAssocs',
                 assocTitle: 'Locations',
                 collectionId: character.collection_id,
@@ -81,7 +82,9 @@
                 entryType: 'character',
                 assocType: 'location',
                 areaList: relationships.locations
-            }) %>
+            }) 
+            */ %>
+            <textarea id="locations" name="locations" placeholder="Links to Locations" style="flex: 1;"></textarea>
             <textarea id="lore" name="lore" placeholder="Links to Lore" style="flex: 1;"></textarea>
         </div>
         <div class="EntryPage-Manage">
