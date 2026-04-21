@@ -2,26 +2,26 @@
     <div class="LorePage-Main">
         <div class="LorePage-Title">
             <%- include('partials/titleArea', {
-            collectionId: lore.collection_id,
-            entryId: lore.id,
+            collectionId: entry.collection_id,
+            entryId: entry.id,
             entryType: 'lore',
-            entryName: lore.name
+            entryName: entry.name
             }) %>
         </div>
         <div class="LorePage-Info">
             <div class="LorePage-Overview">
                 <%- include('partials/imageArea', {
-                    collectionId: lore.collection_id,
-                    entryId: lore.id,
+                    collectionId: entry.collection_id,
+                    entryId: entry.id,
                     entryType: 'lore',
-                    imagePath: lore.image_path
+                    imagePath: entry.image_path
                 }) %>
                 <%- include('partials/noteArea', {
                     sectionTitle: 'Summary', 
                     id: 'summary', 
-                    value: lore.summary,
-                    collectionId: lore.collection_id,
-                    entryId: lore.id,
+                    value: entry.summary,
+                    collectionId: entry.collection_id,
+                    entryId: entry.id,
                     entryType: 'lore'
                 }) %>
             </div>
@@ -29,9 +29,9 @@
                 <%- include('partials/noteArea', {
                     sectionTitle: 'Details', 
                     id: 'details', 
-                    value: lore.details,
-                    collectionId: lore.collection_id,
-                    entryId: lore.id,
+                    value: entry.details,
+                    collectionId: entry.collection_id,
+                    entryId: entry.id,
                     entryType: 'lore'
                 }) %>
             </div>
@@ -41,35 +41,41 @@
     <div class="EntryPage-Sidebar">
         <div class="EntryPage-Sidebar-Head">
             <div class="EntryPage-Sidebar-Title">Affiliations</div>
-            <button class="ControlButton" title="Back to World" onclick="location.href='/collection/<%= character.collection_id %>'">Back to World</button>
+            <button class="ControlButton" title="Back to World" onclick="location.href='/collection/<%= entry.collection_id %>'">Back to World</button>
         </div>
         <div class="EntryPage-Associations">
             <%- include('partials/associations', {
                 id: 'charAssocs', 
                 assocTitle: 'Characters',
-                collectionId: lore.collection_id,
-                entryId: lore.id,
+                collectionId: entry.collection_id,
+                entryId: entry.id,
                 entryType: 'lore',
                 assocType: 'character',
                 areaList: relationships.characters
             }) %>
-            <%- /*
-            include('partials/associations', {
+            <%- include('partials/associations', {
                 id: 'locAssocs',
                 assocTitle: 'Locations',
-                collectionId: lore.collection_id,
-                entryId: lore.id,
+                collectionId: entry.collection_id,
+                entryId: entry.id,
                 entryType: 'lore',
                 assocType: 'location',
                 areaList: relationships.locations
-            }) 
-            */ %>
-            <textarea id="locations" name="locations" placeholder="Links to Locations" style="flex: 1;"></textarea>
+            }) %>
+            <%- include('partials/associations', {
+                id: 'orgsAssocs', 
+                assocTitle: 'Organizations',
+                collectionId: entry.collection_id,
+                entryId: entry.id,
+                entryType: 'lore',
+                assocType: 'organization',
+                areaList: relationships.organizations
+            }) %>
             <%- include('partials/associations', {
                 id: 'loreAssocs', 
                 assocTitle: 'Lore',
-                collectionId: lore.collection_id,
-                entryId: lore.id,
+                collectionId: entry.collection_id,
+                entryId: entry.id,
                 entryType: 'lore',
                 assocType: 'lore',
                 areaList: relationships.lore
@@ -77,7 +83,7 @@
         </div>
         <div class="EntryPage-Manage">
             <button class="ControlButton disabled" disabled title="Not Implemented">Planeshift</button>
-            <button class="ControlButton" type="button" onclick="deleteEntry('<%= lore.collection_id %>','<%= lore.id %>', '<%= lore.name %>', 'lore')">Delete</button>
+            <button class="ControlButton" type="button" onclick="deleteEntry('<%= entry.collection_id %>','<%= entry.id %>', '<%= entry.name %>', 'lore')">Delete</button>
             <button class="ControlButton disabled" disabled title="Not Implemented">Export</button>
         </div>
     </div>

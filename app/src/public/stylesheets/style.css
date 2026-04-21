@@ -267,8 +267,7 @@
   ============================================================*/
 
 /* Format for Menu pages */
-.SplashPage
-{
+.SplashPage {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -330,7 +329,7 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 10px;
         
         min-height: 0;
     }
@@ -339,7 +338,7 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 10px;
             
             min-height: 0;
         }
@@ -486,6 +485,7 @@
 
             .LorePage-Details {
                 flex: 1;
+                display: flex;
 
                 min-height: 0;
             }

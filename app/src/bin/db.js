@@ -540,7 +540,7 @@ function createDatabaseManager(dbPath) {
           const stmt = database.prepare(`
             SELECT * FROM locations
             WHERE collection_id = :cid
-              AND parent_location_id = NULL
+              AND parent_location_id IS NULL
           `);
 
           return stmt.all({cid: collectionId});

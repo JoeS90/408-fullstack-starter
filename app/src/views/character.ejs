@@ -73,8 +73,7 @@
                 assocType: 'character',
                 areaList: relationships.characters
             }) %>
-            <%- /*
-            include('partials/associations', {
+            <%- include('partials/associations', {
                 id: 'locAssocs',
                 assocTitle: 'Locations',
                 collectionId: entry.collection_id,
@@ -82,10 +81,25 @@
                 entryType: 'character',
                 assocType: 'location',
                 areaList: relationships.locations
-            }) 
-            */ %>
-            <textarea id="locations" name="locations" placeholder="Links to Locations" style="flex: 1;"></textarea>
-            <textarea id="lore" name="lore" placeholder="Links to Lore" style="flex: 1;"></textarea>
+            }) %>
+            <%- include('partials/associations', {
+                id: 'orgAssocs',
+                assocTitle: 'Organizations',
+                collectionId: entry.collection_id,
+                entryId: entry.id,
+                entryType: 'character',
+                assocType: 'organization',
+                areaList: relationships.organizations
+            }) %>
+            <%- include('partials/associations', {
+                id: 'loreAssocs',
+                assocTitle: 'Lore',
+                collectionId: entry.collection_id,
+                entryId: entry.id,
+                entryType: 'character',
+                assocType: 'lore',
+                areaList: relationships.lores
+            }) %>
         </div>
         <div class="EntryPage-Manage">
             <button class="ControlButton disabled" disabled title="Not Implemented">Planeshift</button>

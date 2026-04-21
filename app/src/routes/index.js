@@ -225,8 +225,10 @@ const USER_IMAGE_PATH = 'user_uploads/images';
         }
 
         const rels = {
-          characters: req.db.getCharactersByCollection(collectionId),
-          locations: req.db.getOrphanLocationsByCollection(collectionId)
+          characters: req.db.getEntriesByCollectionByType(collectionId, 'character'),
+          locations: req.db.getOrphanLocationsByCollection(collectionId),
+          organizations: req.db.getEntriesByCollectionByType(collectionId, 'organization'),
+          lores: req.db.getEntriesByCollectionByType(collectionId, 'lore'),
         }
 
         res.render('world', {world: data, relationships: rels});
@@ -251,35 +253,26 @@ const USER_IMAGE_PATH = 'user_uploads/images';
 
       try
       {
-        const data = req.db.getCollection(collectionId, userId);
-
-        if(!data)
+        const collection = req.db.getCollection(collectionId, userId);
+        if(!collection)
         {
           return res.status(404).send("Collection not found.");
         }
 
-        switch(assocType)
+        const existing = req.db.getNamesByCollectionAndType(collectionId, assocType);
+        if(req.db.nameAlreadyExists(existing, name))
         {
-          case 'character':
-            const characters = req.db.getCharactersByCollection(collectionId);
-            if(req.db.nameAlreadyExists(characters, name))
-            {
-              throw new Error("A character with that name already exists in this collection.");
-              return;
-            }
-            const resultCreate = req.db.createCharacter(name, collectionId);
-
-            if(entryType !== 'collection')
-            {
-              const resultAssociate = req.db.createAssociation(collectionId, entryId, entryType, resultCreate.lastInsertRowid, assocType, relationship);
-            }
-            res.redirect(`/character/${collectionId}/${resultCreate.lastInsertRowid}`);
-            break;
-          default:
-            const err = "Invalid request for /addEntry";
-            console.log(err);
-            return res.status(400).json({error: err});
+          throw new Error(`A ${assocType} with that name already exists in this collection.`);
+          return;
         }
+
+        const resultCreate = req.db.createEntry(name, collectionId, assocType)
+        if(entryType !== 'collection')
+        {
+          const resultAssociate = req.db.createAssociation(collectionId, entryId, entryType, resultCreate.lastInsertRowid, assocType, relationship);
+        }
+            
+        res.redirect(`/${assocType}/${collectionId}/${resultCreate.lastInsertRowid}`);
       }
       catch(e)
       {
