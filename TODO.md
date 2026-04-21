@@ -1,5 +1,7 @@
 # TODO
 
+Fix index.js "/addEntry" to match generic pattern.
+
 ## Pages
 - world.ejs
     - implement associations

@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 
 /* Create the users table. Tracks accounts. */
 /* TODO: Implement UUID and encrypted storage of emails */
-/* NOTE: All Entry tables need explicit 'id', 'name', and 'image_path' fields. */
+/* NOTE: All Entry tables need explicit 'id', 'collection_id', 'name', and 'image_path' fields. */
 const createUsersTable = `
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,27 +28,12 @@ const createCollectionsTable = `
     FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE CASCADE 
   )`;
 
-/* Create the locations table. */
-const createLocationsTable = `
-  CREATE TABLE IF NOT EXISTS locations (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name VARCHAR(50) NOT NULL,
-    collection_id INTEGER,
-    image_path TEXT,
-    atmosphere TEXT,
-    history TEXT,
-    notes TEXT,
-    parent_location_id INTEGER,
-    FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE,
-    FOREIGN KEY (parent_location_id) REFERENCES locations(id) ON DELETE SET NULL
-  )`;
-
 /* Create the characters table. */
 const createCharactersTable = `
   CREATE TABLE IF NOT EXISTS characters (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name VARCHAR(50) NOT NULL,
-    collection_id INTEGER,
+    collection_id INTEGER NOT NULL,
     image_path TEXT,
     description TEXT,
     behavior TEXT,
@@ -67,6 +52,89 @@ const createCharactersTable = `
               (entry_id = OLD.id AND entry_type = 'character')
             OR  
               (assoc_id = OLD.id AND assoc_type = 'character')
+          );
+      END;
+    `;
+
+/* Create the locations table. */
+const createLocationsTable = `
+  CREATE TABLE IF NOT EXISTS locations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(50) NOT NULL,
+    collection_id INTEGER NOT NULL,
+    image_path TEXT,
+    atmosphere TEXT,
+    history TEXT,
+    notes TEXT,
+    parent_location_id INTEGER,
+    FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_location_id) REFERENCES locations(id) ON DELETE SET NULL
+  )`;
+
+  const createLocationsAssocCascadeTrigger = `
+    CREATE TRIGGER IF NOT EXISTS delete_location_associations
+      AFTER DELETE ON locations
+      BEGIN
+        DELETE FROM associations
+        WHERE collection_id = OLD.collection_id
+          AND (
+              (entry_id = OLD.id AND entry_type = 'location')
+            OR  
+              (assoc_id = OLD.id AND assoc_type = 'location')
+          );
+      END;
+    `;
+
+/* Create the organizations table. */
+const createOrganizationsTable = `
+  CREATE TABLE IF NOT EXISTS organizations (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(50) NOT NULL,
+    collection_id INTEGER NOT NULL,
+    image_path TEXT,
+    overview TEXT,
+    history TEXT,
+    hierarchy TEXT,
+    notes TEXT,
+    FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE
+  )`;
+
+  const createOrganizationsAssocCascadeTrigger = `
+    CREATE TRIGGER IF NOT EXISTS delete_organization_associations
+      AFTER DELETE ON organizations
+      BEGIN
+        DELETE FROM associations
+        WHERE collection_id = OLD.collection_id
+          AND (
+              (entry_id = OLD.id AND entry_type = 'organization')
+            OR  
+              (assoc_id = OLD.id AND assoc_type = 'organization')
+          );
+      END;
+    `;
+
+/* Create the lore table. (I know it shouldn't be 'lores'. Don't get me started. */
+const createLoresTable = `
+  CREATE TABLE IF NOT EXISTS lores (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(50) NOT NULL,
+    collection_id INTEGER NOT NULL,
+    image_path TEXT,
+    summary TEXT,
+    details TEXT,
+    FOREIGN KEY (collection_id) REFERENCES collections(id) ON DELETE CASCADE
+  )`;
+
+  const createLoresAssocCascadeTrigger = `
+    CREATE TRIGGER IF NOT EXISTS delete_lore_associations
+      AFTER DELETE ON lores
+      BEGIN
+        DELETE FROM associations
+        WHERE collection_id = OLD.collection_id
+          AND (
+              (entry_id = OLD.id AND entry_type = 'lore')
+            OR  
+              (assoc_id = OLD.id AND assoc_type = 'lore')
           );
       END;
     `;
@@ -103,8 +171,10 @@ function createDatabaseManager(dbPath) {
   /* Build tables */
   database.exec(createUsersTable);
   database.exec(createCollectionsTable);
-  database.exec(createLocationsTable);
   database.exec(createCharactersTable);
+  database.exec(createLocationsTable);
+  database.exec(createOrganizationsTable);
+  database.exec(createLoresTable);
   database.exec(createAssociationsTable);
 
   /* Build indexes */
@@ -113,6 +183,9 @@ function createDatabaseManager(dbPath) {
 
   /* Build triggers */
   database.exec(createCharacterAssocCascadeTrigger);
+  database.exec(createLocationsAssocCascadeTrigger);
+  database.exec(createOrganizationsAssocCascadeTrigger);
+  database.exec(createLoresAssocCascadeTrigger);
 
   function ensureConnected() {
     if (!database.open) {
@@ -128,6 +201,8 @@ function createDatabaseManager(dbPath) {
       'collection': 'collections',
       'character': 'characters',
       'location': 'locations',
+      'organization': 'organizations',
+      'lore': 'lores'
     };
 
     if(!whitelist[table])
@@ -369,6 +444,14 @@ function createDatabaseManager(dbPath) {
               SELECT id, name, 'location' as type
               FROM locations
               WHERE collection_id = :cid
+            UNION ALL
+              SELECT id, name, 'organization' as type
+              FROM organizations
+              WHERE collection_id = :cid
+            UNION ALL
+              SELECT id, name, 'lore' as type
+              FROM lores
+              WHERE collection_id = :cid
           `);
 
           return stmt.all({cid: collectionId});
@@ -414,6 +497,14 @@ function createDatabaseManager(dbPath) {
             UNION ALL
               SELECT image_path
               FROM locations
+              WHERE collection_id = :cid
+            UNION ALL
+              SELECT image_path
+              FROM organizations
+              WHERE collection_id = :cid
+            UNION ALL
+              SELECT image_path
+              FROM lores
               WHERE collection_id = :cid
           `);
           
@@ -516,7 +607,31 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      /* LOCATIONS */
+
+      /* ORGANIZATIONS */
+
+      /* LORE */
+
       /* GENERIC ENTRY */
+      createEntry: (name, collectionId, entryType) =>
+      {
+        const vtable = validateTable(entryType);
+        try
+        {
+          const stmt = database.prepare(`
+            INSERT INTO ${vtable} (name, collection_id)
+            VALUES (?, ?)  
+          `);
+
+          return stmt.run(name, collectionId);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
       getEntry: (collectionId, entryId, entryType) =>
       {
         const vtable = validateTable(entryType);

@@ -349,8 +349,45 @@ const USER_IMAGE_PATH = 'user_uploads/images';
       }
     });
 
+    router.get('/:entryType/:collectionId/:id', checkAuth, function(req, res) {
+      const entryType = req.params.entryType;
+      const collectionId = req.params.collectionId;
+      const entryId = req.params.id;
+      const userId = req.session.user.id;
+      try
+      {
+        const data = req.db.getCollection(collectionId, userId);
+        
+        if(!data)
+        {
+          return res.status(404).json({error: "Collection not found."});
+        }
+
+        const entry = req.db.getEntry(collectionId, entryId, entryType);
+
+        const rels = {
+          characters: req.db.getAssociationsByType(collectionId, entryId, entryType, 'character'),
+          locations: req.db.getAssociationsByType(collectionId, entryId, entryType, 'location'),
+          organizations: req.db.getAssociationsByType(collectionId, entryId, entryType, 'organization'),
+          lores: req.db.getAssociationsByType(collectionId, entryId, entryType, 'lore'),
+        }
+
+        res.render(entryType, {entry: entry, relationships: rels});
+      }
+      catch(e)
+      {
+        console.log(e);
+        return res.status(500).json({error: e.message});
+      }
+    });
+
+    router.post('/:entryType/:collectionId/:id', checkAuth, function(req, res){
+      const {entryType, collectionId, id} = req.params;
+      res.redirect(`/:entryType/${collectionId}/${id}`);
+    });
+
   /* CHARACTER */
-    router.get('/character/:collectionId/:id', checkAuth, function(req, res) {
+    /*router.get('/character/:collectionId/:id', checkAuth, function(req, res) {
       const collectionId = req.params.collectionId;
       const characterId = req.params.id;
       const userId = req.session.user.id;
@@ -383,6 +420,14 @@ const USER_IMAGE_PATH = 'user_uploads/images';
       const {collectionId, id} = req.params;
       res.redirect(`/character/${collectionId}/${id}`);
     });
+
+  /* LOCATION */
+
+  /* ORGANIZATION */
+
+  /* LORE */
+
+
 
   /* ASSOCIATION PAGE */
     router.post('/createAssociation', checkAuth, function(req, res) {

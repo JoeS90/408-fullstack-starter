@@ -416,7 +416,105 @@
             gap: 10px;
         }
 
-    .EntryPage-Sidebar {
+    
+
+/* Format for the Location page */
+    .LocationPage {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        padding: 10px;
+
+        min-height: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    
+
+/* Format for the Organization page */
+
+/* LORE PAGE */
+    .LorePage {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        padding: 10px;
+
+        min-height: 0;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .LorePage-Main {
+        flex: 4;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        min-height: 0;
+    }
+
+        .LorePage-Title {
+            flex: 0 0 auto;
+            margin: 10px;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .LorePage-Info {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+
+            min-height: 0;
+        }
+
+            .LorePage-Overview {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+
+                min-height: 0;
+            }
+
+            .LorePage-Details {
+                flex: 1;
+
+                min-height: 0;
+            }
+
+/* ENTRY PAGE SIDEBAR */
+.EntryPage-Sidebar {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    
+    min-height: 0;
+}
+
+    .EntryPage-Sidebar-Head{
+        display: flex;
+        flex-direction: row;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        margin: 0;
+    }
+    
+        .EntryPage-Sidebar-Title {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+    .EntryPage-Associations {
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -425,50 +523,13 @@
         min-height: 0;
     }
 
-        .EntryPage-Sidebar-Head{
-            display: flex;
-            flex-direction: row;
-            flex: 0 0 auto;
-            align-items: center;
-            justify-content: space-between;
-            margin: 0;
-        }
-        
-            .EntryPage-Sidebar-Title {
-                font-size: 1.2rem;
-                font-weight: bold;
-            }
-
-        .EntryPage-Associations {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            
-            min-height: 0;
-        }
-
-        .EntryPage-Manage {
-            flex: 0 0 auto;
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-around;
-        }
-
-/* Format for the Location page */
-.LocationPage
-{
-
-}
-
-/* Format for the Lore page */
-.LorePage
-{
-
-}
-
-
+    .EntryPage-Manage {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+    }
 
 /* OTHER ELEMENTS */
 

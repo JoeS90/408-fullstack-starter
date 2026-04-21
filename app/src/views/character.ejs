@@ -2,18 +2,18 @@
     <div class="CharacterPage-Main">
         <div class="CharacterPage-Overview">
             <%- include('partials/imageArea', {
-                collectionId: character.collection_id,
-                entryId: character.id,
+                collectionId: entry.collection_id,
+                entryId: entry.id,
                 entryType: 'character',
-                imagePath: character.image_path
+                imagePath: entry.image_path
             }) %>
             <div class="CharacterPage-Info">
                 <div class="CharacterPage-Title">
                     <%- include('partials/titleArea', {
-                    collectionId: character.collection_id,
-                    entryId: character.id,
+                    collectionId: entry.collection_id,
+                    entryId: entry.id,
                     entryType: 'character',
-                    entryName: character.name
+                    entryName: entry.name
                     }) %>
                     <h3>Stat Block: <%= "TODO" %></h3>
                 </div>
@@ -21,17 +21,17 @@
                     <%- include('partials/noteArea', {
                         sectionTitle: 'Physical Description', 
                         id: 'description', 
-                        value: character.description,
-                        collectionId: character.collection_id,
-                        entryId: character.id,
+                        value: entry.description,
+                        collectionId: entry.collection_id,
+                        entryId: entry.id,
                         entryType: 'character'
                     }) %>
                     <%- include('partials/noteArea', {
                         sectionTitle: 'Behavior', 
                         id: 'behavior', 
-                        value: character.behavior,
-                        collectionId: character.collection_id,
-                        entryId: character.id,
+                        value: entry.behavior,
+                        collectionId: entry.collection_id,
+                        entryId: entry.id,
                         entryType: 'character'
                     }) %>
                 </div>
@@ -41,17 +41,17 @@
             <%- include('partials/noteArea', {
                 sectionTitle: 'Backstory', 
                 id: 'backstory', 
-                value: character.backstory,
-                collectionId: character.collection_id,
-                entryId: character.id,
+                value: entry.backstory,
+                collectionId: entry.collection_id,
+                entryId: entry.id,
                 entryType: 'character'
             }) %>
             <%- include('partials/noteArea', {
                 sectionTitle: 'Notes', 
                 id: 'notes', 
-                value: character.notes,
-                collectionId: character.collection_id,
-                entryId: character.id,
+                value: entry.notes,
+                collectionId: entry.collection_id,
+                entryId: entry.id,
                 entryType: 'character'
             }) %>
         </div>
@@ -60,15 +60,15 @@
     <div class="EntryPage-Sidebar">
         <div class="EntryPage-Sidebar-Head">
             <div class="EntryPage-Sidebar-Title">Affiliations</div>
-            <button class="ControlButton" title="Back to World" onclick="location.href='/collection/<%= character.collection_id %>'">Back to World</button>
+            <button class="ControlButton" title="Back to World" onclick="location.href='/collection/<%= entry.collection_id %>'">Back to World</button>
         </div>
         <div class="EntryPage-Associations">
             
             <%- include('partials/associations', {
                 id: 'charAssocs', 
                 assocTitle: 'Characters',
-                collectionId: character.collection_id,
-                entryId: character.id,
+                collectionId: entry.collection_id,
+                entryId: entry.id,
                 entryType: 'character',
                 assocType: 'character',
                 areaList: relationships.characters
@@ -77,8 +77,8 @@
             include('partials/associations', {
                 id: 'locAssocs',
                 assocTitle: 'Locations',
-                collectionId: character.collection_id,
-                entryId: character.id,
+                collectionId: entry.collection_id,
+                entryId: entry.id,
                 entryType: 'character',
                 assocType: 'location',
                 areaList: relationships.locations
@@ -89,7 +89,7 @@
         </div>
         <div class="EntryPage-Manage">
             <button class="ControlButton disabled" disabled title="Not Implemented">Planeshift</button>
-            <button class="ControlButton" type="button" onclick="deleteEntry('<%= character.collection_id %>','<%= character.id %>', '<%= character.name %>', 'character')">Delete</button>
+            <button class="ControlButton" type="button" onclick="deleteEntry('<%= entry.collection_id %>','<%= entry.id %>', '<%= entry.name %>', 'character')">Delete</button>
             <button class="ControlButton disabled" disabled title="Not Implemented">Export</button>
         </div>
     </div>
