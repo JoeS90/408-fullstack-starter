@@ -1,15 +1,6 @@
 # TODO
 
-Fix index.js "/addEntry" to match generic pattern.
-
 ## Pages
-- world.ejs
-    - implement associations
-- character.ejs
-    - implement associations
-- location.ejs
-- lore.ejs
-- faction.ejs
 - about.ejs
 
     ### Partials
