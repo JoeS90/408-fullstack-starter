@@ -376,7 +376,7 @@ const USER_IMAGE_PATH = 'user_uploads/images';
 
     router.post('/:entryType/:collectionId/:id', checkAuth, function(req, res){
       const {entryType, collectionId, id} = req.params;
-      res.redirect(`/:entryType/${collectionId}/${id}`);
+      res.redirect(`/${entryType}/${collectionId}/${id}`);
     });
 
   /* CHARACTER */

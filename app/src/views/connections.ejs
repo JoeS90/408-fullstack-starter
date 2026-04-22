@@ -13,7 +13,7 @@
         <!-- TODO: Add separate handling for location-location relationships -->
         <select class="DropDown" id="assocId" name="assocId">
             <% list.forEach(item => { %>
-                <% if (Number(item.id) !== Number(entryId)) { %>
+                <% if (Number(item.id) !== Number(entryId) || entryType !== assocType) { %>
                     <option value="<%= item.id %>"><%= item.name %></option> 
                 <% } %>
             <% }); %>
