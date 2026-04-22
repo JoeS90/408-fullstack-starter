@@ -1,13 +1,11 @@
 <div class="LorePage">
     <div class="LorePage-Main">
-        <div class="LorePage-Title">
-            <%- include('partials/titleArea', {
+        <%- include('partials/titleArea', {
             collectionId: entry.collection_id,
             entryId: entry.id,
             entryType: 'lore',
             entryName: entry.name
-            }) %>
-        </div>
+        }) %>
         <div class="LorePage-Info">
             <div class="LorePage-Overview">
                 <%- include('partials/imageArea', {

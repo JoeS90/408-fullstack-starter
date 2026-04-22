@@ -1,37 +1,49 @@
-<div class="LocationPage">
-    <div class="LocationPage-Main">
-        <div class="LocationPage-Overview">
+<div class="OrganizationPage">
+    <div class="OrganizationPage-Main">
+        <div class="OrganizationPage-Info">
             <%- include('partials/titleArea', {
                 collectionId: entry.collection_id,
                 entryId: entry.id,
-                entryType: 'location',
+                entryType: 'organization',
                 entryName: entry.name
             }) %>
-            <div class="LocationPage-Image">
-                <%- include('partials/imageArea', {
-                    collectionId: entry.collection_id,
-                    entryId: entry.id,
-                    entryType: 'location',
-                    imagePath: entry.image_path
-                }) %>
+            <div class="OrganizationPage-Details">
+                <div class="OrganizationPage-Overview">
+                    <%- include('partials/imageArea', {
+                        collectionId: entry.collection_id,
+                        entryId: entry.id,
+                        entryType: 'organization',
+                        imagePath: entry.image_path
+                    }) %>
+                    <%- include('partials/noteArea', {
+                        sectionTitle: 'Overview', 
+                        id: 'overview', 
+                        value: entry.overview,
+                        collectionId: entry.collection_id,
+                        entryId: entry.id,
+                        entryType: 'organization'
+                    }) %>
+                </div>
+                <div class="OrganizationPage-Hierarchy">
+                    <%- include('partials/noteArea', {
+                        sectionTitle: 'Hierarchy', 
+                        id: 'hierarchy', 
+                        value: entry.hierarchy,
+                        collectionId: entry.collection_id,
+                        entryId: entry.id,
+                        entryType: 'organization'
+                    }) %>
+                </div>
             </div>
-            <%- include('partials/noteArea', {
-                sectionTitle: 'Atmosphere', 
-                id: 'atmosphere', 
-                value: entry.atmosphere,
-                collectionId: entry.collection_id,
-                entryId: entry.id,
-                entryType: 'location'
-            }) %>
         </div>
-        <div class="LocationPage-Info">                    
+        <div class="OrganizationPage-Background">
             <%- include('partials/noteArea', {
                 sectionTitle: 'History', 
                 id: 'history', 
                 value: entry.history,
                 collectionId: entry.collection_id,
                 entryId: entry.id,
-                entryType: 'location'
+                entryType: 'organization'
             }) %>
             <%- include('partials/noteArea', {
                 sectionTitle: 'Notes', 
@@ -39,7 +51,7 @@
                 value: entry.notes,
                 collectionId: entry.collection_id,
                 entryId: entry.id,
-                entryType: 'location'
+                entryType: 'organization'
             }) %>
         </div>
     </div>
@@ -50,13 +62,12 @@
             <button class="ControlButton" title="Back to World" onclick="location.href='/collection/<%= entry.collection_id %>'">Back to World</button>
         </div>
         <div class="EntryPage-Associations">
-            
             <%- include('partials/associations', {
                 id: 'charAssocs', 
                 assocTitle: 'Characters',
                 collectionId: entry.collection_id,
                 entryId: entry.id,
-                entryType: 'location',
+                entryType: 'organization',
                 assocType: 'character',
                 areaList: relationships.characters
             }) %>
@@ -65,32 +76,32 @@
                 assocTitle: 'Locations',
                 collectionId: entry.collection_id,
                 entryId: entry.id,
-                entryType: 'location',
+                entryType: 'organization',
                 assocType: 'location',
                 areaList: relationships.locations
             }) %>
             <%- include('partials/associations', {
-                id: 'orgAssocs',
+                id: 'orgsAssocs', 
                 assocTitle: 'Organizations',
                 collectionId: entry.collection_id,
                 entryId: entry.id,
-                entryType: 'location',
+                entryType: 'organization',
                 assocType: 'organization',
                 areaList: relationships.organizations
             }) %>
             <%- include('partials/associations', {
-                id: 'loreAssocs',
+                id: 'loreAssocs', 
                 assocTitle: 'Lore',
                 collectionId: entry.collection_id,
                 entryId: entry.id,
-                entryType: 'location',
+                entryType: 'organization',
                 assocType: 'lore',
-                areaList: relationships.lores
+                areaList: relationships.lore
             }) %>
         </div>
         <div class="EntryPage-Manage">
             <button class="ControlButton disabled" disabled title="Not Implemented">Planeshift</button>
-            <button class="ControlButton" type="button" onclick="deleteEntry('<%= entry.collection_id %>','<%= entry.id %>', '<%= entry.name %>', 'location')">Delete</button>
+            <button class="ControlButton" type="button" onclick="deleteEntry('<%= entry.collection_id %>','<%= entry.id %>', '<%= entry.name %>', 'organization')">Delete</button>
             <button class="ControlButton disabled" disabled title="Not Implemented">Export</button>
         </div>
     </div>
