@@ -38,7 +38,7 @@
                         <% } %>
                     </div>
                     <% if (entryType !== 'collection') { %>
-                        <button class="AssocArea-DeleteButton" type="button" onclick="removeAssociation(this, '<%= rel.id %>', '<%= rel.relationship %>')">X</button>
+                        <button class="AssocArea-DeleteButton" type="button" onclick="removeAssociation(this, '<%= rel.id %>', '<%= rel.relationship %>')" aria-label="Delete association">X</button>
                     <% } %>
                 </li>
             <% }); %>

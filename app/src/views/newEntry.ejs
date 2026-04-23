@@ -14,6 +14,10 @@
             <input type="text" name="relationship" placeholder="Relationship">
         <% } %>
         <button class="MenuButton" type="submit">Add</button>
-        <button class="MenuButton" type="submit" formaction="/<%= entryType %>/<%= collectionId %>/<%= entryId %>" formnovalidate>Back</button>
+        <% if (entryType !== 'collection') { %>
+            <button class="MenuButton" type="submit" formaction="/<%= entryType %>/<%= collectionId %>/<%= entryId %>" formnovalidate>Back</button>
+        <% } else { %>
+            <button class="MenuButton" type="submit" formaction="/collection/<%= collectionId %>" formnovalidate>Back</button>
+        <% } %>
     </form>
 </div>

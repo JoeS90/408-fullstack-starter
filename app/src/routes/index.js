@@ -144,7 +144,7 @@ const USER_IMAGE_PATH = 'user_uploads/images';
   /* Get about page. */
   router.get('/about', function(req, res) {
     res.render('about');
-  })
+  });
 
 /*============================================================
     PAGE CREATION/RETRIEVAL/DELETION
@@ -238,6 +238,11 @@ const USER_IMAGE_PATH = 'user_uploads/images';
         console.log(e);
         return res.status(500).json({error: e.message});
       }
+    });
+
+    router.post('/collection/:collectionId', checkAuth, function(req, res){
+      const {collectionId} = req.params;
+      res.redirect(`/collection/${collectionId}`);
     });
 
   /* ENTRY */
@@ -619,6 +624,53 @@ const USER_IMAGE_PATH = 'user_uploads/images';
       }
     });
 
+    router.delete('/deleteImage/:collectionId/:entryId/:entryType', checkAuth, function(req, res) {
+      const { collectionId, entryId, entryType } = req.params;
+      const userId = req.session.user.id;
+
+      try
+      {
+        const collection = req.db.getCollection(collectionId, userId);
+        if(!collection)
+        {
+          return res.status(404).json({error: "Collection not found."});
+        }        
+
+        var imagePath;
+
+        if(entryType === 'collection')
+        {
+          imagePath = collection.image_path;
+
+          req.db.removeCollectionImage(collectionId);
+        }
+        else
+        {
+          const entry = req.db.getEntry(collectionId, entryId, entryType);
+        
+          imagePath = entry.image_path;
+
+          req.db.removeEntryImage(collectionId, entryId, entryType);
+        }
+        
+        
+        if(imagePath !== null && imagePath !== '')
+        {
+          const absPath = path.join(__dirname, '../public', imagePath);
+          if(fs.existsSync(absPath)) {
+            fs.unlinkSync(absPath);
+          }
+        }
+
+        res.status(200).json({success: true});
+      }
+      catch(e)
+      {
+        console.log(e);
+        res.status(500).json({error: e.message});
+      }
+    });
+
   /* ASSOCIATION AREA */
     router.delete('/deleteAssociation/:collectionId/:entryId/:entryType/:assocId/:assocType/:relationship', checkAuth, function(req, res) {
       const collectionId = req.params.collectionId;
@@ -626,7 +678,7 @@ const USER_IMAGE_PATH = 'user_uploads/images';
       const entryType = req.params.entryType;
       const assocId = req.params.assocId;
       const assocType = req.params.assocType;
-      const relationship = req.params.relationship;
+      const relationship = req.params.relationship === "null" ? null : req.params.relationship;
       const userId = req.session.user.id;
 
       try

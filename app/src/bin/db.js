@@ -431,6 +431,24 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      removeCollectionImage: (collectionId) =>
+      {
+        try
+        {
+          const stmt = database.prepare(`
+            UPDATE collections
+            SET image_path = NULL
+            WHERE id = ?
+          `);
+
+          return stmt.run(collectionId);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
       getEntriesByCollection: (collectionId) =>
       {
         try
@@ -571,7 +589,7 @@ function createDatabaseManager(dbPath) {
       },
 
       /* CHARACTERS */
-      createCharacter: (name, collectionId) =>
+      /*createCharacter: (name, collectionId) =>
       {
         try
         {
@@ -605,7 +623,7 @@ function createDatabaseManager(dbPath) {
         {
           throw e; // TODO: add specific handling
         }
-      },
+      },*/
 
       /* LOCATIONS */
 
@@ -744,6 +762,26 @@ function createDatabaseManager(dbPath) {
           `);
 
           return stmt.run(newPath, entryId, collectionId);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      removeEntryImage: (collectionId, entryId, entryType) =>
+      {
+        const vtable = validateTable(entryType);
+        try
+        {
+          const stmt = database.prepare(`
+            UPDATE ${vtable}
+            SET image_path = NULL
+            WHERE id = ?
+              AND collection_id = ?
+          `);
+
+          return stmt.run(entryId, collectionId);
         }
         catch (e)
         {

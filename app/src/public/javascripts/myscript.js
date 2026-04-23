@@ -185,6 +185,8 @@ async function uploadImage(event)
     {
       const display = imageArea.querySelector('#EntryImage');
       display.src = data.imagePath;
+      const button = imageArea.querySelector('#DeleteButton');
+      button.classList.remove('hidden');
 
       event.target.value = '';
     }
@@ -193,6 +195,38 @@ async function uploadImage(event)
   {
     console.log(e);
     alert(e.message);
+  }
+}
+
+async function deleteImage(event)
+{
+  event.stopPropagation();
+
+  const area = document.getElementById('Image-Area');
+  const collectionId = area.dataset.cid;
+  const entryId = area.dataset.eid;
+  const entryType = area.dataset.type;
+
+  try
+  {
+    const response = await fetch(`/deleteImage/${collectionId}/${entryId}/${entryType}`, {
+      method: 'DELETE'
+    });
+    
+    if(response.ok)
+    {
+      document.getElementById('EntryImage').src = '/images/PostalGames_placeholder.png';
+      document.getElementById('DeleteButton').classList.add('hidden');
+      area.dataset.path = "";
+    }
+    else
+    {
+      alert(`Failed to delete image.`);
+    }
+  }
+  catch(e)
+  {
+    alert(`Failed to delete image: ${e.message}`);
   }
 }
 
@@ -234,10 +268,11 @@ async function removeAssociation(button, assocId, relationship)
   const entryId = area.dataset.eid;
   const entryType = area.dataset.etype;
   const assocType = area.dataset.atype;
+  const passRel = (relationship === "") ? "null" : relationship;
 
   try
   {
-    const response = await fetch(`/deleteAssociation/${collectionId}/${entryId}/${entryType}/${assocId}/${assocType}/${relationship}`, {
+    const response = await fetch(`/deleteAssociation/${collectionId}/${entryId}/${entryType}/${assocId}/${assocType}/${passRel}`, {
       method: 'DELETE'
     });
 

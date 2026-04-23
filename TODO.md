@@ -1,7 +1,12 @@
 # TODO
 
+## Bugs
+- Uploading to server clears user image files.
+
 ## Pages
 - about.ejs
+- Bug report form
+- Manage Account
 
     ### Partials
     - Associations
@@ -15,11 +20,11 @@
 - Default data (stat blocks)
 
 ## Additional Features
-- Encrypt DB
-- Move/copy to collection (planeshift)
+- Bug reporting
 - Import/Export data (pdf vs zip? both?)
-- Delete image
+- Move/copy to collection (planeshift)
 - Delete account
+- Encrypt DB
 - Share collection
 - Obfuscate collection
 - Offline mode?

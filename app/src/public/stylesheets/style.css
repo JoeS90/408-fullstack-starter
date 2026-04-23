@@ -180,6 +180,8 @@
 
     /* IMAGE AREA */
         .ImageArea {
+            position: relative;
+
             flex: 1;
             display: flex;
             align-items: center;
@@ -193,6 +195,23 @@
             max-width: 100%;
 
             border: var(--section-border);
+        }
+
+        .ImageArea-DeleteButton {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+
+            padding: 0px 2px;
+
+            background-color: var(--emphasis-color);
+            opacity: .3;
+
+            flex: 0 0 auto;
+        }
+
+        .ImageArea-DeleteButton:hover {
+            opacity: 1;
         }
     
     /* ASSOCIATIONS */
@@ -417,7 +436,7 @@
 
     
 
-/* Format for the Location page */
+/* LOCATION PAGE */
     .LocationPage {
         flex: 1;
         display: flex;
@@ -675,3 +694,6 @@
     color: var(--alert-color);
 }
 
+.hidden {
+    display: none;
+}

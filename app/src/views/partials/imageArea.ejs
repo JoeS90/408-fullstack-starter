@@ -6,6 +6,14 @@
     data-type="<%= entryType %>" 
     data-path="<%= imagePath %>"
 >
+
+    <button type="button"
+        class="ImageArea-DeleteButton <%= !imagePath ? 'hidden' : '' %>"
+        id="DeleteButton"
+        onclick="deleteImage(event)"
+        aria-label="Delete image"
+    >X</button>
+
     <img 
         id="EntryImage" 
         src="<%= imagePath || '/images/PostalGames_placeholder.png' %>" 
