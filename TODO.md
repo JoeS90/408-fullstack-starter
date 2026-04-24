@@ -20,11 +20,12 @@
 - Default data (stat blocks)
 
 ## Additional Features
+- Sortable affiliations
 - Bug reporting
-- Import/Export data (pdf vs zip? both?)
-- Move/copy to collection (planeshift)
 - Delete account
 - Encrypt DB
+- Move/copy to collection (planeshift)
+- Import/Export data (pdf vs zip? both?)
 - Share collection
 - Obfuscate collection
 - Offline mode?

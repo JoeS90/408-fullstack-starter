@@ -27,6 +27,7 @@
     </div>
     <ul class="AssocArea-List">
         <% if (areaList && areaList.length > 0) { %>
+            <% areaList.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase())); %>
             <% areaList.forEach(rel => { %>
                 <li class="AssocArea-Entry">
                     <div>
