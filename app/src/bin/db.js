@@ -588,49 +588,6 @@ function createDatabaseManager(dbPath) {
         }
       },
 
-      /* CHARACTERS */
-      /*createCharacter: (name, collectionId) =>
-      {
-        try
-        {
-          const stmt = database.prepare(`
-            INSERT INTO characters (name, collection_id, description, notes)
-            VALUES (?, ?, ?, ?)  
-          `);
-
-          return stmt.run(name, collectionId, '', '');
-        }
-        catch (e)
-        {
-          throw e; // TODO: add specific handling
-        }
-      },
-
-      getCharacter: (collectionId, characterId) =>
-      {
-        try
-        {
-          const stmt = database.prepare(`
-            SELECT * from characters
-            WHERE collection_id = ?
-              AND id = ?
-          `);
-
-          const row = stmt.get(collectionId, characterId);
-          return row ? row : null;
-        }
-        catch (e)
-        {
-          throw e; // TODO: add specific handling
-        }
-      },*/
-
-      /* LOCATIONS */
-
-      /* ORGANIZATIONS */
-
-      /* LORE */
-
       /* GENERIC ENTRY */
       createEntry: (name, collectionId, entryType) =>
       {
