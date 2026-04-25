@@ -301,3 +301,41 @@ async function removeAssociation(button, assocId, relationship)
     alert(e.message);
   }
 }
+
+async function removeParentLocationAssociation(button, entryId)
+{
+  const area = button.closest('.AssocArea');
+  const collectionId = area.dataset.cid;
+
+  try
+  {
+    const response = await fetch(`/deleteLocationParent/${collectionId}/${entryId}`, {
+      method: 'DELETE'
+    });
+
+    if(!response.ok)
+    {
+      const data = await response.json();
+      throw new Error('Delete failed: ' + data.error);
+    }
+    else
+    {
+      const listItem = button.closest('.AssocArea-Entry');
+      
+      if(listItem) 
+      { 
+        listItem.remove(); 
+      }
+      
+      const list = area.querySelector('.AssocArea-List');
+      if( list && list.children.length === 0)
+      {
+        list.innerHTML = 'No entries found.';
+      }
+    }
+  }
+  catch(e)
+  {
+    alert(e.message);
+  }
+}

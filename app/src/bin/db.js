@@ -767,6 +767,25 @@ function createDatabaseManager(dbPath) {
           throw e; // TODO: add specific handling
         }
       },
+
+      removeLocationParent: (collectionId, entryId) =>
+      {
+        try
+        {
+          const stmt = database.prepare(`
+            UPDATE locations
+            SET parent_location_id = NULL
+            WHERE collection_id = ?
+              AND id = ?
+          `);
+
+          return stmt.run(collectionId, entryId);
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
       
       /* GENERAL */
       nameAlreadyExists: (array, name) =>
@@ -785,52 +804,79 @@ function createDatabaseManager(dbPath) {
       {
         try
         {
-          // TODO: This query does not take into account assymetric relationships (parent-child, employer/employee)
-          var getAssocs;
-          
-          if(entryType === 'character' && assocType === 'character')
+          if(entryType === 'location' && assocType === 'location')
           {
-            /* Only get one-way relationship */
-            getAssocs = database.prepare(`
-              SELECT assoc_id AS id, relationship FROM associations
-              WHERE collection_id = :cid
-                AND entry_id = :eid 
-                AND entry_type = :etype
-                AND assoc_type = :atype
+            /* Get a whole different object structure... */
+            const parentQuery = database.prepare(`
+              SELECT id, name
+              FROM locations
+              WHERE id = (SELECT parent_location_id
+                          FROM locations
+                          WHERE id = :eid
+                            AND collection_id = :cid)
+                AND collection_id = :cid
             `);
+
+            const childrenQuery = database.prepare(`
+              SELECT id, name
+              FROM locations
+              WHERE parent_location_id = :eid
+                AND collection_id = :cid
+            `);
+
+            const parent = parentQuery.get({eid: entryId, cid: collectionId});
+            const children = childrenQuery.all({eid: entryId, cid: collectionId});
+
+            return {parent: parent, children: children};
           }
           else
           {
-            /* Get all relationships */
-            getAssocs = database.prepare(`
-              SELECT assoc_id AS id, relationship FROM associations
-              WHERE collection_id = :cid
-                AND entry_id = :eid 
-                AND entry_type = :etype
-                AND assoc_type = :atype
-              UNION
-              SELECT entry_id AS id, relationship FROM associations
-              WHERE collection_id = :cid
-                AND assoc_id = :eid 
-                AND assoc_type = :etype
-                AND entry_type = :atype
+            var getAssocs;
+            
+            if(entryType === 'character' && assocType === 'character')
+            {
+              /* Only get one-way relationship */
+              getAssocs = database.prepare(`
+                SELECT assoc_id AS id, relationship FROM associations
+                WHERE collection_id = :cid
+                  AND entry_id = :eid 
+                  AND entry_type = :etype
+                  AND assoc_type = :atype
+              `);
+            }
+            else
+            {
+              /* Get all relationships */
+              getAssocs = database.prepare(`
+                SELECT assoc_id AS id, relationship FROM associations
+                WHERE collection_id = :cid
+                  AND entry_id = :eid 
+                  AND entry_type = :etype
+                  AND assoc_type = :atype
+                UNION
+                SELECT entry_id AS id, relationship FROM associations
+                WHERE collection_id = :cid
+                  AND assoc_id = :eid 
+                  AND assoc_type = :etype
+                  AND entry_type = :atype
+              `);
+            }
+
+            const assocIds = getAssocs.all({cid: collectionId, eid: entryId, etype: entryType, atype: assocType});
+            const vtable = validateTable(assocType);
+
+            const getEntry = database.prepare(`
+              SELECT * FROM ${vtable}
+              WHERE id = :eid
             `);
+            
+            const entries = assocIds.map(assoc => {
+              const entry = getEntry.get({eid: assoc.id})
+              return {...entry, relationship: assoc.relationship};
+            });
+
+            return entries;
           }
-
-          const assocIds = getAssocs.all({cid: collectionId, eid: entryId, etype: entryType, atype: assocType});
-          const vtable = validateTable(assocType);
-
-          const getEntry = database.prepare(`
-            SELECT * FROM ${vtable}
-            WHERE id = :eid
-          `);
-          
-          const entries = assocIds.map(assoc => {
-            const entry = getEntry.get({eid: assoc.id})
-            return {...entry, relationship: assoc.relationship};
-          });
-
-          return entries;
         }
         catch(e)
         {
@@ -842,18 +888,61 @@ function createDatabaseManager(dbPath) {
       {
         if(entryType === 'collection' || assocType === 'collection')
         {
-          throw new Error("Associations cannot exist between collections.")
-          return;
+          throw new Error("Associations cannot exist between collections.");
         }
 
         try
         {
+          var stmt;
+
+          if(entryType === 'location' && assocType === 'location')
+          {
+            stmt = database.prepare(`
+              UPDATE locations
+              SET parent_location_id = ?
+              WHERE id = ?
+                AND collection_id = ?
+            `);
+            return stmt.run(entryId, assocId, collectionId);
+          }
+          else
+          {
+            stmt = database.prepare(`
+              INSERT INTO associations (collection_id, entry_id, entry_type, assoc_id, assoc_type, relationship)
+              VALUES (?, ?, ?, ?, ?, ?)
+            `);
+            return stmt.run(collectionId, entryId, entryType, assocId, assocType, relationship);
+          }
+            
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
+      hierarchyLoopDetected: (collectionId, newParentId, newChildId) =>
+      {
+        try
+        {
           const stmt = database.prepare(`
-            INSERT INTO associations (collection_id, entry_id, entry_type, assoc_id, assoc_type, relationship)
-            VALUES (?, ?, ?, ?, ?, ?)
+            WITH RECURSIVE descendants AS (
+              SELECT id 
+              FROM locations
+              WHERE id = :ncId
+                AND collection_id = :cid
+            UNION
+              SELECT l.id 
+              FROM locations l
+              JOIN descendants d
+                ON l.parent_location_id = d.id
+              WHERE l.collection_id = :ncId
+            )
+            SELECT 1 FROM descendants WHERE id = :npId LIMIT 1
           `);
-          
-          return stmt.run(collectionId, entryId, entryType, assocId, assocType, relationship);
+
+          const result = stmt.run({cid: collectionId, ncId: newChildId, npId: newParentId});
+          return !!result;
         }
         catch (e)
         {

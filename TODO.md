@@ -9,9 +9,6 @@
 - Manage Account
 
     ### Partials
-    - Associations
-        - Location-Location
-        - Character-Character reverse association
 
 ## Database
 - Seed data (test entries)

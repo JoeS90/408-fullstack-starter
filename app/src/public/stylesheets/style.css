@@ -258,7 +258,6 @@
         .AssocArea-Entry {
             flex: 0 0 auto;
             display: flex;
-            flex-direction: row;
             justify-content: space-between;
         }
 
@@ -266,6 +265,10 @@
             padding: 0px 2px;
 
             background-color: var(--emphasis-color);
+        }
+
+        .AssocArea-Parent {
+            border-bottom: var(--section-border);
         }
     
     /* SHARED ELEMENTS */

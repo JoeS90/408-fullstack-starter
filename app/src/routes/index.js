@@ -145,6 +145,7 @@ const USER_IMAGE_PATH = 'user_uploads/images';
 /*============================================================
     PAGE CREATION/RETRIEVAL/DELETION
   ============================================================*/
+
   /* COLLECTION */
     router.get('/createCollection', checkAuth, function(req, res) {
       res.render('createCollection', {error: null});
@@ -191,8 +192,8 @@ const USER_IMAGE_PATH = 'user_uploads/images';
           }
         });
 
-        const data = req.db.getCollection(collectionId, userId);
-        if(!data)
+        const collection = req.db.getCollection(collectionId, userId);
+        if(!collection)
         {
           return res.status(404).json({error: "Collection not found."});
         }
@@ -213,9 +214,9 @@ const USER_IMAGE_PATH = 'user_uploads/images';
       const userId = req.session.user.id;
       try
       {
-        const data = req.db.getCollection(collectionId, userId);
+        const collection = req.db.getCollection(collectionId, userId);
         
-        if(!data)
+        if(!collection)
         {
           return res.status(404).json({error: "Collection not found."});
         }
@@ -227,7 +228,7 @@ const USER_IMAGE_PATH = 'user_uploads/images';
           lores: req.db.getEntriesByCollectionByType(collectionId, 'lore'),
         }
 
-        res.render('world', {world: data, relationships: rels});
+        res.render('world', {world: collection, relationships: rels});
       }
       catch(e)
       {
@@ -299,8 +300,8 @@ const USER_IMAGE_PATH = 'user_uploads/images';
 
       try
       {
-        const data = req.db.getCollection(collectionId, userId);
-        if(!data)
+        const collection = req.db.getCollection(collectionId, userId);
+        if(!collection)
         {
           return res.status(404).json({error: "Collection not found."});
         }
@@ -334,9 +335,9 @@ const USER_IMAGE_PATH = 'user_uploads/images';
 
       try
       {
-        const data = req.db.getCollection(collectionId, userId);
+        const collection = req.db.getCollection(collectionId, userId);
 
-        if(!data)
+        if(!collection)
         {
           return res.status(404).send("Collection not found.");
         }
@@ -359,9 +360,9 @@ const USER_IMAGE_PATH = 'user_uploads/images';
       const userId = req.session.user.id;
       try
       {
-        const data = req.db.getCollection(collectionId, userId);
+        const collection = req.db.getCollection(collectionId, userId);
         
-        if(!data)
+        if(!collection)
         {
           return res.status(404).json({error: "Collection not found."});
         }
@@ -445,6 +446,13 @@ const USER_IMAGE_PATH = 'user_uploads/images';
         }
         else
         {
+          if(entryType === 'location' && assocType === 'location')
+          {
+            if(req.db.hierarchyLoopDetected(collectionId, entryId, assocId))
+            {
+              return res.status(400).json({error: "Circular reference detected."});
+            }
+          }
           req.db.createAssociation(collectionId, entryId, entryType, assocId, assocType, A_is_to_E);
         }
 
@@ -454,6 +462,58 @@ const USER_IMAGE_PATH = 'user_uploads/images';
       {
         console.log(e);
         res.status(500).json({error: e});
+      }
+    });
+
+    router.delete('/deleteAssociation/:collectionId/:entryId/:entryType/:assocId/:assocType/:relationship', checkAuth, function(req, res) {
+      const collectionId = req.params.collectionId;
+      const entryId = req.params.entryId;
+      const entryType = req.params.entryType;
+      const assocId = req.params.assocId;
+      const assocType = req.params.assocType;
+      const relationship = req.params.relationship === "null" ? null : req.params.relationship;
+      const userId = req.session.user.id;
+
+      try
+      {
+        const collection = req.db.getCollection(collectionId, userId);
+        if(!collection)
+        {
+          return res.status(404).json({error: "Collection not found."});
+        }        
+
+        const result = req.db.removeAssociation(collectionId, entryId, entryType, assocId, assocType, relationship);
+
+        res.status(200).json({success: true});
+      }
+      catch(e)
+      {
+        console.log(e);
+        res.status(500).json({error: e.message});
+      }
+    });
+
+    router.delete('/deleteLocationParent/:collectionId/:entryId', checkAuth, function(req, res) {
+      const collectionId = req.params.collectionId;
+      const entryId = req.params.entryId;
+      const userId = req.session.user.id;
+
+      try
+      {
+        const collection = req.db.getCollection(collectionId, userId);
+        if(!collection)
+        {
+          return res.status(404).json({error: "Collection not found."});
+        }        
+
+        const result = req.db.removeLocationParent(collectionId, entryId);
+
+        res.status(200).json({success: true});
+      }
+      catch(e)
+      {
+        console.log(e);
+        res.status(500).json({error: e.message});
       }
     });
 
@@ -650,34 +710,5 @@ const USER_IMAGE_PATH = 'user_uploads/images';
         res.status(500).json({error: e.message});
       }
     });
-
-  /* ASSOCIATION AREA */
-    router.delete('/deleteAssociation/:collectionId/:entryId/:entryType/:assocId/:assocType/:relationship', checkAuth, function(req, res) {
-      const collectionId = req.params.collectionId;
-      const entryId = req.params.entryId;
-      const entryType = req.params.entryType;
-      const assocId = req.params.assocId;
-      const assocType = req.params.assocType;
-      const relationship = req.params.relationship === "null" ? null : req.params.relationship;
-      const userId = req.session.user.id;
-
-      try
-      {
-        const data = req.db.getCollection(collectionId, userId);
-        if(!data)
-        {
-          return res.status(404).json({error: "Collection not found."});
-        }        
-
-        const result = req.db.removeAssociation(collectionId, entryId, entryType, assocId, assocType, relationship);
-
-        res.status(200).json({success: true});
-      }
-      catch(e)
-      {
-        console.log(e);
-        res.status(500).json({error: e.message});
-      }
-    });
-
+    
 module.exports = router;
