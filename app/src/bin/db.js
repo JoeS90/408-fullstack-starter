@@ -786,19 +786,36 @@ function createDatabaseManager(dbPath) {
         try
         {
           // TODO: This query does not take into account assymetric relationships (parent-child, employer/employee)
-          const getAssocs = database.prepare(`
-            SELECT assoc_id AS id, relationship FROM associations
-            WHERE collection_id = :cid
-              AND entry_id = :eid 
-              AND entry_type = :etype
-              AND assoc_type = :atype
-            UNION
-            SELECT entry_id AS id, relationship FROM associations
-            WHERE collection_id = :cid
-              AND assoc_id = :eid 
-              AND assoc_type = :etype
-              AND entry_type = :atype
-          `);
+          var getAssocs;
+          
+          if(entryType === 'character' && assocType === 'character')
+          {
+            /* Only get one-way relationship */
+            getAssocs = database.prepare(`
+              SELECT assoc_id AS id, relationship FROM associations
+              WHERE collection_id = :cid
+                AND entry_id = :eid 
+                AND entry_type = :etype
+                AND assoc_type = :atype
+            `);
+          }
+          else
+          {
+            /* Get all relationships */
+            getAssocs = database.prepare(`
+              SELECT assoc_id AS id, relationship FROM associations
+              WHERE collection_id = :cid
+                AND entry_id = :eid 
+                AND entry_type = :etype
+                AND assoc_type = :atype
+              UNION
+              SELECT entry_id AS id, relationship FROM associations
+              WHERE collection_id = :cid
+                AND assoc_id = :eid 
+                AND assoc_type = :etype
+                AND entry_type = :atype
+            `);
+          }
 
           const assocIds = getAssocs.all({cid: collectionId, eid: entryId, etype: entryType, atype: assocType});
           const vtable = validateTable(assocType);

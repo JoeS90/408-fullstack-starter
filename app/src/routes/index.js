@@ -57,10 +57,6 @@ const USER_IMAGE_PATH = 'user_uploads/images';
 /*============================================================
     ADMIN ROUTING
   ============================================================*/
-  /* Dev page with links to various views. TODO: Delete when done */
-  router.get('/dev', function(req, res) {
-    res.render('dev');
-  });
 
   /* Get login page. */
   router.get('/', function(req, res) {
@@ -247,13 +243,14 @@ const USER_IMAGE_PATH = 'user_uploads/images';
 
   /* ENTRY */
     router.post('/createEntry', checkAuth, function(req, res) {
-      const {collectionId, entryId, entryType, assocType} = req.body;
-      res.render('newEntry', {collectionId: collectionId, entryId: entryId, entryType: entryType, assocType: assocType, error: null});
+      const {collectionId, entryId, entryName, entryType, assocType} = req.body;
+      res.render('newEntry', {collectionId: collectionId, entryId: entryId, entryName: entryName, entryType: entryType, assocType: assocType, error: null});
     });
 
     router.post('/addEntry', checkAuth, function(req, res) {
       const{collectionId, entryId, entryType, assocType, name} = req.body;
-      const relationship = req.body.relationship || null;
+      const E_is_to_A = req.body.E_is_to_A || null;
+      const A_is_to_E = req.body.A_is_to_E || null;
       const userId = req.session.user.id;
 
       try
@@ -274,7 +271,15 @@ const USER_IMAGE_PATH = 'user_uploads/images';
         const resultCreate = req.db.createEntry(name, collectionId, assocType)
         if(entryType !== 'collection')
         {
-          const resultAssociate = req.db.createAssociation(collectionId, entryId, entryType, resultCreate.lastInsertRowid, assocType, relationship);
+          if(entryType === 'character' && assocType === 'character')
+          {
+            const resultAssociate1 = req.db.createAssociation(collectionId, entryId, entryType, resultCreate.lastInsertRowid, assocType, A_is_to_E);
+            const resultAssociate2 = req.db.createAssociation(collectionId, resultCreate.lastInsertRowid, assocType, entryId, entryType, E_is_to_A);
+          }
+          else
+          {
+            const resultAssociate = req.db.createAssociation(collectionId, entryId, entryType, resultCreate.lastInsertRowid, assocType, A_is_to_E);
+          }
         }
             
         res.redirect(`/${assocType}/${collectionId}/${resultCreate.lastInsertRowid}`);
@@ -385,39 +390,6 @@ const USER_IMAGE_PATH = 'user_uploads/images';
     });
 
   /* CHARACTER */
-    /*router.get('/character/:collectionId/:id', checkAuth, function(req, res) {
-      const collectionId = req.params.collectionId;
-      const characterId = req.params.id;
-      const userId = req.session.user.id;
-      try
-      {
-        const data = req.db.getCollection(collectionId, userId);
-        
-        if(!data)
-        {
-          return res.status(404).json({error: "Collection not found."});
-        }
-
-        const character = req.db.getCharacter(collectionId, characterId);
-
-        const rels = {
-          characters: req.db.getAssociationsByType(collectionId, characterId, 'character', 'character'),
-          locations: req.db.getAssociationsByType(collectionId, characterId, 'character', 'location')
-        }
-
-        res.render('character', {character: character, relationships: rels});
-      }
-      catch(e)
-      {
-        console.log(e);
-        return res.status(500).json({error: e.message});
-      }
-    });
-
-    router.post('/character/:collectionId/:id', checkAuth, function(req, res){
-      const {collectionId, id} = req.params;
-      res.redirect(`/character/${collectionId}/${id}`);
-    });
 
   /* LOCATION */
 
@@ -454,7 +426,7 @@ const USER_IMAGE_PATH = 'user_uploads/images';
     });
 
     router.post('/addAssociation', checkAuth, function(req, res) {
-      const {collectionId, entryId, entryType, assocType, assocId, relationship} = req.body;
+      const {collectionId, entryId, entryType, assocType, assocId, E_is_to_A, A_is_to_E, parentId} = req.body;
       const userId = req.session.user.id;
 
       try
@@ -466,7 +438,15 @@ const USER_IMAGE_PATH = 'user_uploads/images';
         }
 
         // TODO: add loop for multiple entries
-        req.db.createAssociation(collectionId, entryId, entryType, assocId, assocType, relationship);
+        if(entryType === 'character' && assocType === 'character')
+        {
+          req.db.createAssociation(collectionId, entryId, entryType, assocId, assocType, A_is_to_E);
+          req.db.createAssociation(collectionId, assocId, assocType, entryId, entryType, E_is_to_A);
+        }
+        else
+        {
+          req.db.createAssociation(collectionId, entryId, entryType, assocId, assocType, A_is_to_E);
+        }
 
         res.redirect(`/${entryType}/${collectionId}/${entryId}`);
       }

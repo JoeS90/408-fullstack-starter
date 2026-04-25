@@ -18,8 +18,41 @@
                 <% } %>
             <% }); %>
         </select>
-        <input type="text" name="relationship" placeholder="Relationship">
+        <% if (entryType === 'location' && assocType === 'location') { %>
+            <!-- Location-location condition. Determine which element is the parent element -->
+        <% } else if (entryType === 'character' && assocType === 'character') { %>
+            <!-- Character-character condition. Option for both. -->
+            <div>
+                <%= entryName %> is the 
+                <input type="text" style="margin-left: 2px; margin-right: 2px;" name="E_is_to_A" placeholder="Relationship">
+                of <span id="injectName1"></span>.
+            </div>
+            <div>
+                <span id="injectName2"></span> is the 
+                <input type="text" style="margin-left: 2px; margin-right: 2px;" name="A_is_to_E" placeholder="Relationship">
+                of <%= entryName %>.
+            </div>
+        <% } else { %>
+            <!-- All other cases have directionally agnostic relationships -->
+            <input type="text" name="A_is_to_E" placeholder="Relationship">
+        <% } %>
         <button class="MenuButton" type="submit">Add</button>
         <button class="MenuButton" type="submit" formaction="/<%= entryType %>/<%= collectionId %>/<%= entryId %>" formnovalidate>Back</button>
     </form>
 </div>
+
+<!-- Script to update the names for character-character relationships. Provides clarity for directional associations. -->
+<script>
+    const selection = document.getElementById('assocId');
+    const name1 = document.getElementById('injectName1');
+    const name2 = document.getElementById('injectName2');
+
+    function updateName()
+    {
+        name1.textContent = selection.options[selection.selectedIndex].text;
+        name2.textContent = selection.options[selection.selectedIndex].text;
+    }
+
+    updateName();
+    selection.addEventListener('change', updateName);
+</script>

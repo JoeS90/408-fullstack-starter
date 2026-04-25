@@ -12,7 +12,6 @@
             <form action="/createAssociation" method="POST" style="display: inline;">
                 <input type="hidden" name="collectionId" value="<%= collectionId %>">
                 <input type="hidden" name="entryId" value="<%= entryId %>">
-                <input type="hidden" name="entryName" value="<%= entryName %>">
                 <input type="hidden" name="entryType" value="<%= entryType %>">
                 <input type="hidden" name="assocType" value="<%= assocType %>">
                 <button class="EditToggle" type="submit">Connect</button>
@@ -21,7 +20,6 @@
         <form action="/createEntry" method="POST" style="display: inline;">
             <input type="hidden" name="collectionId" value="<%= collectionId %>">
             <input type="hidden" name="entryId" value="<%= entryId %>">
-            <input type="hidden" name="entryName" value="<%= entryName %>">
             <input type="hidden" name="entryType" value="<%= entryType %>">
             <input type="hidden" name="assocType" value="<%= assocType %>">
             <button class="EditToggle" type="submit">New</button>
