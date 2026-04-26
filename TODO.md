@@ -3,6 +3,10 @@
 ## Bugs
 - Uploading to server clears user image files.
 - Navigating away from a page should prompt when data is unsaved.
+- Removing empty relationships broke again?
+- Remove both sides of asymmetric relationships?
+- connect page needs safeguards and a warning to tell users they need to add entries first.
+- remove relationship to Lore?
 
 ## Pages
 - Bug report form
