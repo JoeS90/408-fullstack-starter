@@ -936,12 +936,12 @@ function createDatabaseManager(dbPath) {
               FROM locations l
               JOIN descendants d
                 ON l.parent_location_id = d.id
-              WHERE l.collection_id = :ncId
+              WHERE l.collection_id = :cid
             )
             SELECT 1 FROM descendants WHERE id = :npId LIMIT 1
           `);
 
-          const result = stmt.run({cid: collectionId, ncId: newChildId, npId: newParentId});
+          const result = stmt.get({cid: collectionId, ncId: newChildId, npId: newParentId});
           return !!result;
         }
         catch (e)

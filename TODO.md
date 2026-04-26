@@ -1,6 +1,7 @@
 # TODO
 
 ## Bugs
+- Circular reference logic is malfunctioning.
 - Uploading to server clears user image files.
 - Navigating away from a page should prompt when data is unsaved.
 

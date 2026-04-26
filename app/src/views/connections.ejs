@@ -10,7 +10,6 @@
         <input type="hidden" name="assocType" value="<%= assocType %>">
 
         <!-- TODO: Add loop for multiple entries -->
-        <!-- TODO: Add separate handling for location-location relationships -->
         <select class="DropDown" id="assocId" name="assocId">
             <% list.forEach(item => { %>
                 <% if (Number(item.id) !== Number(entryId) || entryType !== assocType) { %>
@@ -19,7 +18,7 @@
             <% }); %>
         </select>
         <% if (entryType === 'location' && assocType === 'location') { %>
-            <!-- Location-location condition. Determine which element is the parent element -->
+            <!-- Location-location condition. Determine which element is the parent element? -->
         <% } else if (entryType === 'character' && assocType === 'character') { %>
             <!-- Character-character condition. Option for both. -->
             <div>

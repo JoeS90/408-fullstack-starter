@@ -450,7 +450,16 @@ const USER_IMAGE_PATH = 'user_uploads/images';
           {
             if(req.db.hierarchyLoopDetected(collectionId, entryId, assocId))
             {
-              return res.status(400).json({error: "Circular reference detected."});
+              const entryName = req.db.getEntry(collectionId, entryId, entryType).name;
+              const list = req.db.getEntriesByCollectionByType(collectionId, assocType);
+              return res.render('connections', {
+                collectionId,
+                entryId,
+                entryName,
+                entryType,
+                assocType,
+                list,
+                error: "Circular reference detected. A location cannot contain itself."});
             }
           }
           req.db.createAssociation(collectionId, entryId, entryType, assocId, assocType, A_is_to_E);
