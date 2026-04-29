@@ -48,6 +48,8 @@
 
     function updateName()
     {
+        if(!selection || !name1 || !name2) {return;}
+
         name1.textContent = selection.options[selection.selectedIndex].text;
         name2.textContent = selection.options[selection.selectedIndex].text;
     }

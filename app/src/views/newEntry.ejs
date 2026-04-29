@@ -48,6 +48,8 @@
 
     function updateName()
     {
+        if(!textInput|| !name1 || !name2) {return;}
+
         name1.textContent = textInput.value;
         name2.textContent = textInput.value;
     }

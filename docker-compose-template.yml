@@ -12,6 +12,7 @@ services:
       - INSIDE_DOCKER=true
     volumes:
       - ./data:/app/data
+      - ./app/src/public/user_uploads:/app/src/public/user_uploads
     networks:
       - app-network
     expose:

@@ -37,6 +37,7 @@
             font-size: var(--base-font-size);
         }
 
+        /* Check for small screens (mobile device). Still only works in landscape. */
         @media (max-width: 1000px) {
             html {
                 font-size: var(--mobile-font-size);
