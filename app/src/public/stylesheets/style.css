@@ -15,6 +15,7 @@
 
             /* Fonts */
             --base-font-size: 16px;
+            --mobile-font-size: 10px;
             --font-family: 'Papyrus', 'Garamond', sans-serif;
 
             /* Borders */
@@ -33,6 +34,13 @@
 
         html {
             height: 100%;
+            font-size: var(--base-font-size);
+        }
+
+        @media (max-width: 1000px) {
+            html {
+                font-size: var(--mobile-font-size);
+            }
         }
 
         /* Set the standardized background */
@@ -43,7 +51,6 @@
             background-color: var(--base-color);
             color: var(--text-color);
             font-family: var(--font-family);
-            font-size: var(--base-font-size);
             /* TODO: Add a background radial gradient or texture */
         }
 

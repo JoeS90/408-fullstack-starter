@@ -403,21 +403,42 @@ const USER_IMAGE_PATH = 'user_uploads/images';
   /* ASSOCIATION PAGE */
     router.post('/createAssociation', checkAuth, function(req, res) {
       const {collectionId, entryId, entryType, assocType} = req.body;
+      const userId = req.session.user.id;
 
       try
       {
+        const collection = req.db.getCollection(collectionId, userId);
+        if(collection === null)
+        {
+          res.status(404).json({error: "Collection not found."});
+          return;              
+        }
+
         const entryName = req.db.getEntry(collectionId, entryId, entryType).name;
         const list = req.db.getEntriesByCollectionByType(collectionId, assocType);
 
-        res.render('connections', {
-          collectionId, 
-          entryId, 
-          entryName, 
-          entryType, 
-          assocType,
-          list,
-          error: null
-        });
+        if (list.length === 0 || (entryType === assocType && list.length <= 1))
+        {
+          res.render('newEntry', {
+            collectionId: collectionId, 
+            entryId: entryId, 
+            entryName: entryName, 
+            entryType: entryType, 
+            assocType: assocType, 
+            error: `No ${entryType === assocType ? 'other' : ''} ${assocType} entries exist. Please create one to connect to ${entryName}`});
+        }
+        else
+        {
+          res.render('connections', {
+            collectionId, 
+            entryId, 
+            entryName, 
+            entryType, 
+            assocType,
+            list,
+            error: null
+          });
+        }
       }
       catch(e)
       {
@@ -432,7 +453,8 @@ const USER_IMAGE_PATH = 'user_uploads/images';
 
       try
       {
-        if(req.db.getCollection(collectionId, userId) === null)
+        const collection = req.db.getCollection(collectionId, userId);
+        if(collection === null)
         {
           res.status(404).json({error: "Collection not found."});
           return;              
@@ -536,7 +558,8 @@ const USER_IMAGE_PATH = 'user_uploads/images';
 
       try
       {
-        if(req.db.getCollection(collectionId, userId) === null)
+        const collection = req.db.getCollection(collectionId, userId);
+        if(collection === null)
         {
           res.status(404).json({error: "Collection not found."});
           return;              
@@ -579,7 +602,8 @@ const USER_IMAGE_PATH = 'user_uploads/images';
 
       try
       {
-        if(req.db.getCollection(collectionId, userId) === null)
+        const collection = req.db.getCollection(collectionId, userId);
+        if(collection === null)
         {
           res.status(404).json({error: "Collection not found."});
           return;              

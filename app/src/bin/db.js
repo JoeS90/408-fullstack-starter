@@ -746,21 +746,60 @@ function createDatabaseManager(dbPath) {
         }
       },
 
+      createAssociation: (collectionId, entryId, entryType, assocId, assocType, relationship) =>
+      {
+        if(entryType === 'collection' || assocType === 'collection')
+        {
+          throw new Error("Associations cannot exist between collections.");
+        }
+
+        try
+        {
+          var stmt;
+
+          if(entryType === 'location' && assocType === 'location')
+          {
+            stmt = database.prepare(`
+              UPDATE locations
+              SET parent_location_id = ?
+              WHERE id = ?
+                AND collection_id = ?
+            `);
+            return stmt.run(entryId, assocId, collectionId);
+          }
+          else
+          {
+            stmt = database.prepare(`
+              INSERT INTO associations (collection_id, entry_id, entry_type, assoc_id, assoc_type, relationship)
+              VALUES (?, ?, ?, ?, ?, ?)
+            `);
+            return stmt.run(collectionId, entryId, entryType, assocId, assocType, relationship);
+          }
+            
+        }
+        catch (e)
+        {
+          throw e; // TODO: add specific handling
+        }
+      },
+
       removeAssociation: (collectionId, entryId, entryType, assocId, assocType, relationship) =>
       {
+        console.log(database.prepare(`SELECT * FROM associations WHERE collection_id = ${collectionId}`).all());
+        console.log("DEBUG: " + collectionId, entryId, entryType, assocId, assocType, relationship);
         try
         {
           const stmt = database.prepare (`
             DELETE FROM associations
-            WHERE collection_id = ?
-              AND entry_id = ?
-              AND entry_type = ?
-              AND assoc_id = ?
-              AND assoc_type = ?
-              AND relationship = ?
+            WHERE collection_id = :cid
+              AND entry_id = :eid
+              AND entry_type = :etype
+              AND assoc_id = :aid
+              AND assoc_type = :atype
+              AND (relationship = :rel OR (relationship IS NULL AND :rel IS NULL))
           `);
 
-          return stmt.run(collectionId, entryId, entryType, assocId, assocType, relationship);
+          return stmt.run({cid: collectionId, eid: entryId, etype: entryType, aid: assocId, atype: assocType, rel: relationship});
         }
         catch (e)
         {
@@ -879,43 +918,6 @@ function createDatabaseManager(dbPath) {
           }
         }
         catch(e)
-        {
-          throw e; // TODO: add specific handling
-        }
-      },
-
-      createAssociation: (collectionId, entryId, entryType, assocId, assocType, relationship) =>
-      {
-        if(entryType === 'collection' || assocType === 'collection')
-        {
-          throw new Error("Associations cannot exist between collections.");
-        }
-
-        try
-        {
-          var stmt;
-
-          if(entryType === 'location' && assocType === 'location')
-          {
-            stmt = database.prepare(`
-              UPDATE locations
-              SET parent_location_id = ?
-              WHERE id = ?
-                AND collection_id = ?
-            `);
-            return stmt.run(entryId, assocId, collectionId);
-          }
-          else
-          {
-            stmt = database.prepare(`
-              INSERT INTO associations (collection_id, entry_id, entry_type, assoc_id, assoc_type, relationship)
-              VALUES (?, ?, ?, ?, ?, ?)
-            `);
-            return stmt.run(collectionId, entryId, entryType, assocId, assocType, relationship);
-          }
-            
-        }
-        catch (e)
         {
           throw e; // TODO: add specific handling
         }
