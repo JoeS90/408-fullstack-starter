@@ -1,7 +1,7 @@
 # TODO
 
 ## Bugs
-- Uploading to server clears user image files.
+- TEST SOLUTION: Uploading to server clears user image files.
 - Navigating away from a page should prompt when data is unsaved.
 - Remove both sides of asymmetric relationships?
 - remove relationship to Lore?
@@ -19,6 +19,7 @@
 ## Additional Features
 - Bug reporting
 - Delete account
+- password recovery
 - Encrypt DB
 - Move/copy to collection (planeshift)
 - Import/Export data (pdf vs zip? both?)
