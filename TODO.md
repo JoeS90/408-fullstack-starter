@@ -1,7 +1,6 @@
 # TODO
 
 ## Bugs
-- TEST SOLUTION: Uploading to server clears user image files.
 - Navigating away from a page should prompt when data is unsaved.
 - Remove both sides of asymmetric relationships?
 - remove relationship to Lore?

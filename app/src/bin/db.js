@@ -786,7 +786,6 @@ function createDatabaseManager(dbPath) {
       removeAssociation: (collectionId, entryId, entryType, assocId, assocType, relationship) =>
       {
         console.log(database.prepare(`SELECT * FROM associations WHERE collection_id = ${collectionId}`).all());
-        console.log("DEBUG: " + collectionId, entryId, entryType, assocId, assocType, relationship);
         try
         {
           const stmt = database.prepare (`
