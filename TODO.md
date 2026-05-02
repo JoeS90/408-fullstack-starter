@@ -19,9 +19,9 @@
 - Bug reporting
 - Delete account
 - password recovery
-- Encrypt DB
 - Move/copy to collection (planeshift)
 - Import/Export data (pdf vs zip? both?)
+- Encrypt DB
 - Sortable affiliations
 - Add multiple affiliations
 - Share collection
