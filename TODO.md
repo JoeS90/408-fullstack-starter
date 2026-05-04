@@ -8,6 +8,13 @@
 ## Pages
 - Bug report form
 - Manage Account
+    - Change password
+    - Delete account
+    - Change theme
+- Admin Page
+    - User lists
+    - Bug reports
+    - Data recovery options
 
     ### Partials
 
